@@ -1,0 +1,3884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concrete Pour Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
+<style>
+:root {
+  --bg: #0a0c0f;
+  --surface: #111318;
+  --surface2: #181c23;
+  --surface3: #1f2630;
+  --border: #1e2530;
+  --border-2: #2a3340;
+  --accent: #f59e0b;
+  --accent2: #3b82f6;
+  --accent3: #10b981;
+  --danger: #ef4444;
+  --warning: #fb923c;
+  --text: #e2e8f0;
+  --text-2: #94a3b8;
+  --muted: #64748b;
+  --dim: #334155;
+
+  /* Org colours — kept distinct */
+  --og: #f59e0b;       /* gold */
+  --fh: #3b82f6;       /* fh blue */
+  --epl: #a855f7;      /* purple */
+  --firth: #ef4444;    /* firth red */
+  --jx: #fb923c;       /* orange */
+  --pl: #06b6d4;       /* cyan */
+
+  /* Status */
+  --status-go: #10b981;
+  --status-wait: #ef4444;
+  --status-done: #64748b;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 15px;
+  line-height: 1.5;
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(1) saturate(3) hue-rotate(15deg);
+  cursor: pointer;
+}
+
+/* GRID NOISE TEXTURE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(245,158,11,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,158,11,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mono { font-family: 'Share Tech Mono', monospace; letter-spacing: 0.5px; }
+
+header {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px;
+}
+.header-inner {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.title-block-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--accent);
+  clip-path: polygon(0 30%, 40% 0, 100% 0, 100% 70%, 60% 100%, 0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #000;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.title-block h1 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.title-block h1 .accent {
+  color: var(--accent);
+}
+.title-block .subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.title-block .badge-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.org-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 0;
+  border: 1px solid;
+}
+.org-badge.og   { background: rgba(245,158,11,0.12); color: var(--og); border-color: rgba(245,158,11,0.4); }
+.org-badge.fh   { background: rgba(59,130,246,0.12); color: var(--fh); border-color: rgba(59,130,246,0.4); }
+.org-badge.epl  { background: rgba(168,85,247,0.12); color: var(--epl); border-color: rgba(168,85,247,0.4); }
+.org-badge.firth{ background: rgba(239,68,68,0.12); color: var(--firth); border-color: rgba(239,68,68,0.4); }
+
+.user-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+.user-identity label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+.user-name-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  padding: 8px 14px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.user-name-btn:hover {
+  border-color: var(--accent);
+  background: var(--surface2);
+  color: var(--accent);
+}
+.user-name-btn .user-edit-hint {
+  color: var(--muted);
+  font-size: 12px;
+}
+.user-name-btn:hover .user-edit-hint { color: var(--accent); }
+.user-name-btn.set { border-color: var(--accent); color: var(--accent); }
+.user-name-btn.set .user-edit-hint { color: var(--accent); }
+.user-name-btn.owner { background: rgba(245,158,11,0.1); }
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 1500px;
+  margin: 24px auto 0;
+  padding: 0 28px 60px;
+}
+
+.info-banner {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-2);
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.3px;
+}
+.info-banner strong {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+/* CHART PANEL */
+.chart-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.chart-head {
+  background: var(--surface3);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.chart-head h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.chart-head h3::before {
+  content: '▮ ';
+  color: var(--accent);
+  font-size: 10px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.chart-modes {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+}
+.chart-mode-btn {
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border-2);
+  padding: 5px 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+.chart-mode-btn:last-child { border-right: none; }
+.chart-mode-btn:hover { color: var(--text); background: var(--surface2); }
+.chart-mode-btn.active { background: var(--accent); color: var(--bg); }
+
+.chart-body {
+  padding: 18px 20px 14px;
+  position: relative;
+}
+
+.chart-canvas {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 200px;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+/* Y-axis lines */
+.chart-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.chart-grid .line {
+  position: absolute;
+  left: 0; right: 0;
+  border-top: 1px dashed rgba(100, 116, 139, 0.15);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  padding-left: 2px;
+}
+
+.chart-day-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+.chart-bar-stack {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  background: rgba(100, 116, 139, 0.05);
+  position: relative;
+  cursor: default;
+  transition: filter 0.15s;
+  min-height: 0;
+}
+.chart-bar-stack:not(:empty) {
+  border-top: 1px solid rgba(100, 116, 139, 0.2);
+  background: rgba(100, 116, 139, 0.08);
+}
+.chart-day-col:hover .chart-bar-stack { filter: brightness(1.15); }
+.chart-bar-seg {
+  width: 100%;
+  position: relative;
+}
+.chart-bar-seg.baxters { background: var(--accent); }
+.chart-bar-seg.barry { background: var(--fh); }
+.chart-bar-seg.willows { background: var(--epl); }
+.chart-bar-seg.epl-site { background: var(--epl); }
+.chart-bar-seg.unset { background: var(--muted); }
+
+/* awaiting PO overlay */
+.chart-bar-seg.awaiting::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(239, 68, 68, 0.55),
+    rgba(239, 68, 68, 0.55) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+/* poured / done segments are dimmer */
+.chart-bar-seg.poured { opacity: 0.4; }
+
+.chart-day-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3px;
+  color: var(--muted);
+  text-align: center;
+  padding-top: 5px;
+  text-transform: uppercase;
+  border-top: 1px solid var(--border);
+  min-width: 0;
+  overflow: hidden;
+}
+.chart-day-label.today {
+  color: var(--accent);
+}
+.chart-day-label .dow {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  margin-bottom: 1px;
+}
+.chart-day-label .dnum {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.chart-day-label.today .dnum { color: var(--accent); }
+.chart-day-label.weekend { opacity: 0.4; }
+.chart-day-label .vol {
+  display: block;
+  font-size: 8px;
+  margin-top: 1px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart-day-col.today-col .chart-bar-stack {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.chart-day-col.week-start::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-2);
+  z-index: 2;
+}
+
+.chart-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  padding: 6px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  white-space: nowrap;
+  pointer-events: none;
+  display: none;
+  z-index: 10;
+  box-shadow: 0 0 12px rgba(0,0,0,0.6);
+}
+.chart-day-col:hover .chart-tooltip { display: block; }
+.chart-tooltip strong { color: var(--accent); }
+.chart-tooltip .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 2px;
+}
+.chart-tooltip .row .label { color: var(--muted); }
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.chart-legend-swatch {
+  width: 14px;
+  height: 10px;
+  display: inline-block;
+}
+.chart-legend-swatch.baxters { background: var(--accent); }
+.chart-legend-swatch.barry { background: var(--fh); }
+.chart-legend-swatch.willows { background: var(--epl); }
+.chart-legend-swatch.unset { background: var(--muted); }
+.chart-legend-swatch.awaiting {
+  background: rgba(239, 68, 68, 0.2);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(239, 68, 68, 0.55),
+    rgba(239, 68, 68, 0.55) 3px,
+    transparent 3px,
+    transparent 6px
+  );
+}
+
+.chart-empty {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--muted);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.kpi:hover {
+  border-color: var(--border-2);
+  transform: translateY(-1px);
+}
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--muted);
+}
+.kpi.warn::before { background: var(--danger); }
+.kpi.good::before { background: var(--accent3); }
+.kpi.fh::before { background: var(--accent); }
+.kpi .label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.kpi .value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+.kpi.warn .value { color: var(--danger); }
+.kpi.good .value { color: var(--accent3); }
+.kpi.fh .value { color: var(--accent); }
+.kpi .sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.toolbar h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.toolbar h2 .count {
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  opacity: 0.7;
+}
+.toolbar .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn {
+  background: var(--accent);
+  color: var(--bg);
+  border: 1px solid var(--accent);
+  padding: 9px 20px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.btn:hover { background: #fbbf24; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn.secondary {
+  background: transparent;
+  color: var(--text-2);
+  border-color: var(--border-2);
+  clip-path: none;
+}
+.btn.secondary:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgba(245,158,11,0.08);
+  transform: none;
+}
+.btn.fh {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.btn.firth { background: var(--firth); color: white; border-color: var(--firth); }
+.btn.danger { background: var(--danger); color: white; border-color: var(--danger); }
+.btn.small { padding: 6px 12px; font-size: 11px; letter-spacing: 1px; clip-path: none; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--text-2);
+  transition: all 0.15s;
+}
+.filter-chip:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+.filter-chip.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.filter-chip .n {
+  display: inline-block;
+  margin-left: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  opacity: 0.75;
+}
+
+.register {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.register-head {
+  background: var(--surface3);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.register-head strong {
+  color: var(--accent);
+  font-weight: 400;
+}
+.register-head .meta {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  color: var(--muted);
+}
+.register-head .meta strong { color: var(--text-2); font-weight: 400; }
+.sync-indicator {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent3);
+  margin-right: 6px;
+  box-shadow: 0 0 8px var(--accent3);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.sync-indicator.syncing {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th {
+  background: var(--surface3);
+  text-align: left;
+  padding: 10px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text);
+}
+tr:hover td { background: rgba(245,158,11,0.03); }
+tr.poured td { background: rgba(16,185,129,0.05); color: var(--text-2); }
+tr.poured td:first-child { border-left: 3px solid var(--accent3); }
+
+/* COMMENT ROWS */
+tr.comment-row td {
+  background: var(--bg);
+  border-top: none;
+  padding: 0;
+}
+tr.comment-row .comment-wrap {
+  padding: 14px 18px;
+  border-left: 3px solid var(--accent);
+  margin: 0 0 4px 0;
+}
+tr.comment-row .comment-history {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-2);
+  white-space: pre-wrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+tr.comment-row .comment-history.empty {
+  color: var(--muted);
+  font-style: italic;
+}
+tr.comment-row .comment-history .stamp {
+  color: var(--accent);
+  font-weight: 700;
+}
+tr.comment-row .comment-history .stamp.fh { color: var(--fh); }
+tr.comment-row .comment-history .stamp.firth { color: var(--firth); }
+tr.comment-row .comment-input-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+tr.comment-row textarea.comment-input {
+  flex: 1;
+  min-height: 38px;
+  max-height: 140px;
+  padding: 8px 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px;
+  border: 1px solid var(--border-2);
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+  letter-spacing: 0.3px;
+}
+tr.comment-row textarea.comment-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.comment-toggle {
+  background: transparent;
+  border: 1px solid var(--border-2);
+  color: var(--muted);
+  padding: 4px 9px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.comment-toggle:hover {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--accent);
+}
+.comment-toggle.has-comments {
+  border-color: rgba(245,158,11,0.4);
+  color: var(--accent);
+}
+.comment-toggle.expanded {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.col-date { width: 96px; }
+.col-time { width: 78px; }
+.col-desc { width: 180px; }
+.col-location { width: 110px; }
+.col-mix { width: 280px; }
+.col-qty { width: 80px; text-align: right; }
+.col-po { width: 160px; }
+.col-tests { width: 80px; text-align: center; }
+.col-pump { width: 130px; text-align: center; }
+.col-placers { width: 130px; text-align: center; }
+.col-actions { width: 90px; }
+
+td.qty, th.col-qty { text-align: right; font-family: 'Share Tech Mono', monospace; }
+td.col-tests, td.col-pump, td.col-placers { text-align: center; }
+
+/* Y/N pill for Tests and Placers columns */
+.yn-pill {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 3px 9px;
+  cursor: pointer;
+  border: 1px solid;
+  user-select: none;
+  transition: all 0.12s;
+}
+.yn-pill.y { background: rgba(16,185,129,0.12); color: var(--accent3); border-color: rgba(16,185,129,0.4); }
+.yn-pill.n { background: rgba(100,116,139,0.08); color: var(--muted); border-color: var(--border-2); }
+.yn-pill:hover { filter: brightness(1.15); }
+.placer-crew {
+  display: block;
+  margin-top: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  color: var(--text-2);
+}
+.placer-crew-input {
+  width: 100%;
+  padding: 4px 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  border: 1px solid var(--border-2);
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+}
+.placer-crew-input:focus { outline: none; border-color: var(--accent); }
+td.po-cell { font-family: 'Share Tech Mono', monospace; }
+
+.tag {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  font-weight: 400;
+  padding: 3px 8px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+.tag.green { background: rgba(16,185,129,0.12); color: var(--accent3); border-color: rgba(16,185,129,0.35); }
+.tag.red { background: rgba(239,68,68,0.12); color: var(--danger); border-color: rgba(239,68,68,0.35); }
+.tag.amber { background: rgba(245,158,11,0.12); color: var(--accent); border-color: rgba(245,158,11,0.35); }
+.tag.blue { background: rgba(59,130,246,0.12); color: var(--accent2); border-color: rgba(59,130,246,0.35); }
+.tag.firth { background: rgba(239,68,68,0.12); color: var(--firth); border-color: rgba(239,68,68,0.35); }
+
+input.po-input,
+input.cell-input,
+select.cell-input,
+textarea.cell-input {
+  width: 100%;
+  padding: 6px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  border: 1px solid var(--border-2);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 0;
+  letter-spacing: 0.5px;
+  transition: border-color 0.15s;
+}
+input.po-input.empty { border-color: var(--danger); background: rgba(239,68,68,0.06); }
+input.po-input.filled { border-color: var(--accent3); }
+input.po-input:focus,
+input.cell-input:focus,
+select.cell-input:focus,
+textarea.cell-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-2);
+  white-space: nowrap;
+  padding: 2px 0;
+}
+.contact-chip .name { font-weight: 600; color: var(--text); font-family: 'Barlow Condensed', sans-serif; }
+.contact-chip a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.contact-chip a:hover { color: var(--accent); }
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.contact-list .org-tag {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  padding: 1px 5px;
+  border: 1px solid;
+  margin-right: 2px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  border-radius: 0;
+}
+.org-tag.fh    { background: rgba(59,130,246,0.12); color: var(--fh); border-color: rgba(59,130,246,0.35); }
+.org-tag.epl   { background: rgba(168,85,247,0.12); color: var(--epl); border-color: rgba(168,85,247,0.35); }
+.org-tag.og    { background: rgba(245,158,11,0.12); color: var(--og); border-color: rgba(245,158,11,0.35); }
+.org-tag.firth { background: rgba(239,68,68,0.12); color: var(--firth); border-color: rgba(239,68,68,0.35); }
+.org-tag.jx    { background: rgba(251,146,60,0.12); color: var(--jx); border-color: rgba(251,146,60,0.35); }
+.org-tag.pl    { background: rgba(6,182,212,0.12); color: var(--pl); border-color: rgba(6,182,212,0.35); }
+.org-tag.custom { background: rgba(100,116,139,0.12); color: var(--text-2); border-color: rgba(100,116,139,0.35); }
+
+.site-pill {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  font-weight: 400;
+  padding: 3px 8px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+.site-pill.baxters { background: rgba(245,158,11,0.12); color: var(--accent); border-color: rgba(245,158,11,0.4); }
+.site-pill.barry { background: rgba(59,130,246,0.12); color: var(--fh); border-color: rgba(59,130,246,0.4); }
+.site-pill.willows { background: rgba(168,85,247,0.12); color: var(--epl); border-color: rgba(168,85,247,0.4); }
+.site-pill.custom { background: rgba(100,116,139,0.12); color: var(--text-2); border-color: rgba(100,116,139,0.35); }
+
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border-2);
+  color: var(--muted);
+  width: 30px; height: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.icon-btn:hover {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--accent);
+}
+.icon-btn.danger:hover {
+  background: rgba(239,68,68,0.12);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.empty-state .icon { font-size: 32px; margin-bottom: 10px; }
+.empty-state h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 15, 0.85);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-backdrop.show { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  max-width: 720px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+}
+.modal-head {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-head h2 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.modal-body { padding: 22px; }
+.modal-foot {
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-body > div > div > label,
+.modal-body > div > label {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: 10px !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  color: var(--muted) !important;
+  font-weight: 400 !important;
+}
+
+.paste-area {
+  width: 100%;
+  min-height: 180px;
+  padding: 12px;
+  border: 1px solid var(--border-2);
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  resize: vertical;
+}
+.paste-area:focus { outline: none; border-color: var(--accent); }
+
+.help-box {
+  background: rgba(245,158,11,0.06);
+  border-left: 2px solid var(--accent);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 16px;
+  letter-spacing: 0.3px;
+}
+
+.preview-table {
+  margin-top: 14px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+}
+.preview-table table { font-size: 12px; }
+.preview-table th, .preview-table td { padding: 7px 9px; }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  padding: 12px 20px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 0 20px rgba(245,158,11,0.3);
+  opacity: 0;
+  transition: all 0.2s;
+  z-index: 200;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.error { border-color: var(--danger); box-shadow: 0 0 20px rgba(239,68,68,0.3); }
+
+.activity-log {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-top: 20px;
+  overflow: hidden;
+}
+.activity-log .head {
+  padding: 12px 18px;
+  background: var(--surface3);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.activity-list { max-height: 220px; overflow-y: auto; }
+.activity-item {
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-item .when {
+  color: var(--muted);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+.activity-item .who {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+}
+
+#pdfDropZone {
+  border: 2px dashed var(--border-2) !important;
+  background: var(--bg) !important;
+  transition: all 0.2s;
+}
+#pdfDropZone:hover {
+  border-color: var(--accent) !important;
+  background: rgba(245,158,11,0.04) !important;
+}
+
+#contactsList .contact-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+#contactsList .contact-card:hover {
+  border-color: var(--accent);
+  background: var(--surface2);
+}
+
+@media (max-width: 1100px) {
+  table { font-size: 12px; }
+  th, td { padding: 8px 6px; }
+  .col-mix { width: auto; }
+  .title-block h1 { font-size: 22px; }
+}
+@media (max-width: 700px) {
+  main { padding: 0 12px 40px; }
+  header { padding: 14px 16px; }
+  .title-block h1 { font-size: 18px; letter-spacing: 1px; }
+  .toolbar h2 { font-size: 16px; }
+  .register table, .register thead, .register tbody, .register th, .register td, .register tr {
+    display: block;
+  }
+  .register thead { display: none; }
+  .register tr {
+    border-bottom: 2px solid var(--border);
+    padding: 12px;
+  }
+  .register td {
+    border: none;
+    padding: 4px 0;
+  }
+  .register td::before {
+    content: attr(data-label);
+    display: inline-block;
+    width: 90px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 400;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="title-block-wrap">
+      <div class="logo-icon">📋</div>
+      <div class="title-block">
+        <h1>Concrete Pour <span class="accent">Register</span></h1>
+        <div class="subtitle">Bay of Plenty · Live Shared Register</div>
+      </div>
+    </div>
+    <div class="user-identity">
+      <label>You are</label>
+      <button class="user-name-btn" id="userNameBtn" onclick="openUserPicker()" title="Choose your name from the directory">
+        <span id="userNameLabel">— choose name —</span>
+        <span class="user-edit-hint">▾</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="info-banner">
+    Anyone on the chain can edit pour details, add comments, attach contacts, or lock a pour once it's confirmed. Every change is logged with your name and the time. <strong style="color:var(--text);">Click "Set name" top-right before making changes</strong> so the activity log knows who's who.
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi"><div class="label">Upcoming Pours</div><div class="value" id="kpiUpcoming">0</div><div class="sub" id="kpiUpcomingSub">across all sites</div></div>
+    <div class="kpi warn"><div class="label">Awaiting PO</div><div class="value" id="kpiAwait">0</div><div class="sub">need PO before pour</div></div>
+    <div class="kpi good"><div class="label">Ready to Pour</div><div class="value" id="kpiReady">0</div><div class="sub">PO confirmed</div></div>
+    <div class="kpi"><div class="label">Total Volume</div><div class="value" id="kpiVolume">0</div><div class="sub">m³ scheduled</div></div>
+    <div class="kpi"><div class="label">Poured</div><div class="value" id="kpiPoured">0</div><div class="sub">delivered to date</div></div>
+  </div>
+
+  <div class="toolbar">
+    <h2>Pour Register <span class="count mono" id="rowCount">0 rows</span></h2>
+    <div class="actions">
+      <button class="btn secondary" id="pasteBtn">Refresh from PDF</button>
+      <button class="btn secondary" id="demoBtn" title="Seed sample pours for demo">Load Demo Data</button>
+      <button class="btn secondary" id="settingsBtn" title="Settings">⚙ Settings</button>
+      <button class="btn fh" id="addBtn">+ Add Pour</button>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-chip active" data-filter="all">All <span class="n" id="nAll">0</span></button>
+    <button class="filter-chip" data-filter="awaiting">Awaiting PO <span class="n" id="nAwait">0</span></button>
+    <button class="filter-chip" data-filter="ready">Ready <span class="n" id="nReady">0</span></button>
+    <button class="filter-chip" data-filter="poured">Poured <span class="n" id="nPoured">0</span></button>
+    <button class="filter-chip" data-filter="upcoming">Upcoming (7 days) <span class="n" id="nUpcoming">0</span></button>
+    <button class="filter-chip" data-filter="archive">Archive <span class="n" id="nArchive">0</span></button>
+  </div>
+
+  <div class="filter-bar" style="margin-top:-4px;" id="siteFilterBar">
+    <span style="font-family:'Share Tech Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); font-weight:400; align-self:center; margin-right:4px;">Site:</span>
+    <!-- chips populated dynamically by renderSiteFilterBar -->
+  </div>
+
+  <div class="register">
+    <div class="register-head">
+      <div><strong>Live Register</strong></div>
+      <div class="meta">
+        <span><span class="sync-indicator" id="syncDot"></span><span id="syncText">Connected</span></span>
+        <span>Last update: <strong id="lastUpdate">—</strong></span>
+        <a href="#" id="resetAllBtn" style="color:var(--muted); font-family:'Share Tech Mono',monospace; font-size:10px; text-decoration:underline; margin-left:8px; letter-spacing:1.2px;">Reset all</a>
+      </div>
+    </div>
+    <div id="tableWrap"></div>
+  </div>
+
+  <!-- Contacts Directory -->
+  <div class="activity-log" style="margin-top:20px;">
+    <div class="head" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>Contact Directory <span style="font-weight:400; color:var(--muted); margin-left:6px;" id="contactsCount"></span></span>
+      <button class="btn fh small" id="addContactBtn">+ Add Your Name and Contact Details</button>
+    </div>
+    <div id="contactsList" style="padding: 6px 0;"></div>
+  </div>
+
+  <div class="activity-log">
+    <div class="head">Recent Activity</div>
+    <div class="activity-list" id="activityList">
+      <div class="activity-item" style="color:var(--muted); font-style:italic; justify-content:center;">No activity yet</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Add Pour Modal -->
+<div class="modal-backdrop" id="addModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Add Pour</h2>
+      <button class="icon-btn" onclick="closeModal('addModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px;">
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Pour Date</label>
+          <input type="date" id="np-date" class="cell-input" style="margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Pour Time</label>
+          <input type="text" id="np-time" class="cell-input" style="margin-top:4px;" placeholder="e.g. 8:00 AM">
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Pour Description</label>
+          <input type="text" id="np-desc" class="cell-input" style="margin-top:4px;" placeholder="e.g. Tank Farm Slab">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Site</label>
+          <select id="np-site" class="cell-input" style="margin-top:4px;" onchange="onSiteChange()">
+            <option value="">-- choose site --</option>
+            <option value="Baxters Rd">Baxters Rd</option>
+            <option value="Barry Rd">Barry Rd</option>
+            <option value="Willows Rd">Willows Rd</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Sub-location</label>
+          <input type="text" id="np-loc" class="cell-input" style="margin-top:4px;" placeholder="e.g. Zone 1, Tank Farm">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Site Contact</label>
+          <input type="text" id="np-contact" class="cell-input" style="margin-top:4px;" placeholder="auto-fills from site">
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Mix</label>
+          <input type="text" id="np-mix" class="cell-input" style="margin-top:4px;" placeholder="e.g. 30MPa 19mm Pump mix">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Quantity (m³)</label>
+          <input type="number" step="0.1" id="np-qty" class="cell-input" style="margin-top:4px;">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">PO Number</label>
+          <input type="text" id="np-po" class="cell-input mono" style="margin-top:4px;" placeholder="optional at this stage">
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Tests Required</label>
+          <input type="text" id="np-tests" class="cell-input" style="margin-top:4px;" placeholder="e.g. 1 x 7 days, 2 x 28 days">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Conc Pump Required</label>
+          <div style="display:flex; align-items:center; gap:10px; margin-top:6px;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+              <input type="checkbox" id="np-pump" onchange="document.getElementById('np-pump-crew').style.display = this.checked ? 'block' : 'none';"> Yes
+            </label>
+            <input type="text" id="np-pump-crew" class="cell-input" style="display:none; flex:1;" placeholder="Crew (optional, e.g. Marlon)">
+          </div>
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Placers Required</label>
+          <div style="display:flex; align-items:center; gap:10px; margin-top:6px;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:13px; cursor:pointer;">
+              <input type="checkbox" id="np-placers" onchange="document.getElementById('np-placers-crew').style.display = this.checked ? 'block' : 'none';"> Yes
+            </label>
+            <input type="text" id="np-placers-crew" class="cell-input" style="display:none; flex:1;" placeholder="Crew (optional, e.g. Sunnz)">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('addModal')">Cancel</button>
+      <button class="btn fh" onclick="saveNewPour()">Add to Register</button>
+    </div>
+  </div>
+</div>
+
+<!-- Paste Modal -->
+<div class="modal-backdrop" id="pasteModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Refresh from FH Concrete Register PDF</h2>
+      <button class="icon-btn" onclick="closeModal('pasteModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="help-box">
+        Drop the latest FH concrete register PDF here. Existing pours are matched by date + description + site and get updated where details have changed (mix, time, quantity, tests). New pours get added. Anything you've already filled in (PO, comments, lock state, attached people) is preserved. Pours not in the new PDF stay in the register.
+      </div>
+
+      <div id="pdfDropZone" style="
+        border: 2px dashed var(--border-2);
+        border-radius: 4px;
+        padding: 28px 20px;
+        text-align: center;
+        cursor: pointer;
+        background: var(--bg);
+        transition: all 0.15s;
+        margin-bottom: 14px;
+      ">
+        <div style="font-size: 28px; margin-bottom: 6px;">📄</div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--text);">Drop PDF here</div>
+        <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">or click to choose a file</div>
+        <input type="file" id="pdfFileInput" accept="application/pdf,.pdf" style="display: none;">
+        <div id="pdfStatus" style="font-size: 12px; color: var(--text-2); margin-top: 8px;"></div>
+      </div>
+
+      <details style="margin-bottom: 10px;">
+        <summary style="cursor: pointer; font-size: 12px; color: var(--text-2); user-select: none;">Or paste text directly</summary>
+        <textarea class="paste-area" id="pasteArea" placeholder="Paste pour rows here..." style="margin-top: 8px;"></textarea>
+        <div style="margin-top: 6px;">
+          <button class="btn secondary small" onclick="parsePaste()">Preview Pasted Text</button>
+        </div>
+      </details>
+
+      <div id="pastePreview"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('pasteModal')">Cancel</button>
+      <button class="btn fh" id="confirmPasteBtn" onclick="confirmPaste()" disabled>Apply Refresh</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Picker Modal -->
+<div class="modal-backdrop" id="userPickerModal">
+  <div class="modal" style="max-width: 520px;">
+    <div class="modal-head">
+      <h2>Who are you?</h2>
+      <button class="icon-btn" onclick="closeModal('userPickerModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="help-box">
+        Pick your name from the directory so the activity log knows who's making changes. If you're not in the list, choose "Other" to add your details first.
+      </div>
+      <div id="user-picker-list" style="display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('userPickerModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal" style="max-width: 560px;">
+    <div class="modal-head">
+      <h2>Settings</h2>
+      <button class="icon-btn" onclick="closeModal('settingsModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="help-box">
+        Anyone in the contact directory can edit the register, refresh from PDF, lock/unlock pours, post comments, and add new sites or contacts. Pours that have been delivered get auto-archived 30 days after the pour date.
+      </div>
+
+      <div style="margin-top: 8px;">
+        <label style="font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); font-weight:400; display:block; margin-bottom:8px;">Archive</label>
+        <div style="font-size:13px; color:var(--text-2); margin-bottom: 8px;" id="archive-summary">—</div>
+        <button class="btn secondary small" onclick="runAutoArchiveNow()">Run archive sweep now</button>
+      </div>
+
+      <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <label style="font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); font-weight:400; display:block; margin-bottom:8px;">Sites</label>
+        <div style="font-size:13px; color:var(--text-2); margin-bottom: 8px;" id="settings-sites-summary">—</div>
+        <div style="font-size:11px; color:var(--muted);">Manage the live site list from the "+ Manage Sites" link in the site filter bar above the register.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('settingsModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Contact to Pour Modal -->
+<div class="modal-backdrop" id="addContactToPourModal">
+  <div class="modal" style="max-width: 560px;">
+    <div class="modal-head">
+      <h2>Attach Person to Pour</h2>
+      <button class="icon-btn" onclick="closeModal('addContactToPourModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="help-box">Pick someone from the directory to attach to this pour. They'll show up in the contact column for this pour only.</div>
+      <input type="hidden" id="acp-pourId">
+      <div id="acp-list" style="display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('addContactToPourModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="modal-backdrop" id="contactModal">
+  <div class="modal" style="max-width: 560px;">
+    <div class="modal-head">
+      <h2 id="contactModalTitle">Add Your Name and Contact Details</h2>
+      <button class="icon-btn" onclick="closeModal('contactModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="help-box">
+        Everyone using the register needs an entry here so changes can be attributed to a real person. Fill in your details (or someone else's). If your company isn't in the list, choose "+ Add new organisation" to create one.
+      </div>
+      <input type="hidden" id="ct-id">
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:14px;">
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">First Name</label>
+          <input type="text" id="ct-firstname" class="cell-input" style="margin-top:4px;" placeholder="e.g. Skye">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Last Name</label>
+          <input type="text" id="ct-lastname" class="cell-input" style="margin-top:4px;" placeholder="e.g. Smith">
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Organisation</label>
+          <select id="ct-org" class="cell-input" style="margin-top:4px;" onchange="onOrgSelectChange()">
+            <option value="fh">Fulton Hogan</option>
+            <option value="firth">Firth</option>
+            <option value="og">Oceana Gold</option>
+            <option value="epl">EPL</option>
+            <option value="jx">Jaxxons (Pumping)</option>
+            <option value="pl">Placers</option>
+            <option value="__custom__">+ Add new organisation</option>
+          </select>
+          <input type="text" id="ct-org-custom" class="cell-input" style="margin-top:6px; display:none;" placeholder="Type the organisation name (e.g. EPL Civil, Aurecon)">
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Role / Title</label>
+          <input type="text" id="ct-role" class="cell-input" style="margin-top:4px;" placeholder="e.g. Site Engineer, Foreman, Plant Supervisor">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Phone</label>
+          <input type="tel" id="ct-phone" class="cell-input" style="margin-top:4px;" placeholder="027 123 4567">
+        </div>
+        <div>
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Email</label>
+          <input type="email" id="ct-email" class="cell-input" style="margin-top:4px;" placeholder="name@company.co.nz">
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label style="font-size:10px; text-transform:uppercase; letter-spacing:0.6px; color:var(--muted); font-weight:600;">Sites Covered</label>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;" id="ct-sites">
+            <!-- populated dynamically from getAllSites() -->
+          </div>
+          <div style="font-size:11px; color:var(--muted); margin-top:6px;">Tick all that apply. Leave empty if you don't appear on any specific site (e.g. accounts, central admin).</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn danger" id="ct-delete-btn" style="margin-right:auto; display:none;" onclick="deleteContact()">Delete</button>
+      <button class="btn secondary" onclick="closeModal('contactModal')">Cancel</button>
+      <button class="btn fh" onclick="saveContact()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+// ───── DEMO DATA NOTICE ─────
+// Contacts seed below uses real first names provided by Jeremy.
+// Phone numbers and email addresses NOT explicitly provided are placeholders
+// for demo purposes (clearly fictional domains/numbers).
+// Once loaded into shared storage, anyone can edit these via the Contacts panel.
+
+// Each contact has: id, name, role, org, phone, email, sites[]
+// `sites` lists which site(s) this contact appears on.
+const SEED_CONTACTS = [
+  // Fulton Hogan
+  { id: 'coennie',  name: 'Coennie',  role: 'Site Manager — FH',           org: 'fh',    phone: '027 000 0001', email: 'coennie.fh@demo', sites: ['Baxters Rd','Barry Rd','Willows Rd'] },
+  { id: 'skye',     name: 'Skye',     role: 'Baxters Rd — FH',             org: 'fh',    phone: '027 000 0002', email: 'skye.fh@demo', sites: ['Baxters Rd'] },
+  { id: 'emma',     name: 'Emma',     role: 'Barry Rd — FH',               org: 'fh',    phone: '027 000 0003', email: 'emma.fh@demo', sites: ['Barry Rd'] },
+  { id: 'marie',    name: 'Marie',    role: 'Willows Rd — FH',             org: 'fh',    phone: '027 000 0004', email: 'marie.fh@demo', sites: ['Willows Rd'] },
+  { id: 'pamela',   name: 'Pamela Shea', role: 'BOP Accounts — FH',         org: 'fh',    phone: '+64 7 575 6157', email: 'pamela.shea@fultonhogan.com', sites: [] },
+  { id: 'fhAP',     name: 'FH BOP AP Inbox', role: 'Accounts Payable',     org: 'fh',    phone: '',           email: 'bopaccountspayable@fultonhogan.com', sites: [] },
+  // Firth
+  { id: 'jeremy',   name: 'Jeremy Olson', role: 'Plant Supervisor — Firth Katikati', org: 'firth', phone: '027 000 0006', email: 'jeremy.olson@firth.co.nz', sites: ['Baxters Rd','Barry Rd','Willows Rd'] },
+  { id: 'firthAdmin', name: 'Firth Customer Admin', role: 'Customer Admin', org: 'firth', phone: '+64 27 222 5706', email: 'firthcustomeradmin@firth.co.nz', sites: [] },
+  // Pumping — covers all FH sites
+  { id: 'marlon',   name: 'Marlon',   role: 'Concrete Pumping — Jaxxons',  org: 'jx',    phone: '027 000 0007', email: 'marlon@jaxxons.demo', sites: ['Baxters Rd','Barry Rd','Willows Rd'] },
+  // Placers
+  { id: 'sunnz',    name: 'Sunnz',    role: 'Concrete Placers',            org: 'pl',    phone: '027 000 0008', email: 'sunnz@placers.demo', sites: ['Baxters Rd','Barry Rd','Willows Rd'] }
+];
+
+// Built-in core sites with custom CSS pill colours
+const BUILTIN_SITE_LABELS = {
+  'Baxters Rd': { label: 'Baxters Rd', short: 'Baxters', client: 'fh' },
+  'Barry Rd':   { label: 'Barry Rd',   short: 'Barry',   client: 'fh' },
+  'Willows Rd': { label: 'Willows Rd', short: 'Willows', client: 'fh' }
+};
+const DEFAULT_BUILTIN_SITES = Object.keys(BUILTIN_SITE_LABELS);
+
+// All site KEYS in display order. Built-ins first, then user-added in `sites` state.
+function getAllSites() {
+  const out = [...DEFAULT_BUILTIN_SITES];
+  sites.forEach(s => { if (!out.includes(s)) out.push(s); });
+  return out;
+}
+function siteLabelInfo(siteKey) {
+  if (BUILTIN_SITE_LABELS[siteKey]) return BUILTIN_SITE_LABELS[siteKey];
+  // User-added site — derive a short label
+  return { label: siteKey, short: siteKey.length > 12 ? siteKey.slice(0, 11) + '…' : siteKey, client: 'custom' };
+}
+// Backwards-compat: SITE_LABELS used elsewhere as a lookup map
+const SITE_LABELS = new Proxy({}, {
+  get: (target, key) => {
+    if (typeof key !== 'string') return undefined;
+    if (BUILTIN_SITE_LABELS[key]) return BUILTIN_SITE_LABELS[key];
+    if (sites.includes(key)) return siteLabelInfo(key);
+    return undefined;
+  }
+});
+function siteCssClass(siteKey) {
+  if (!siteKey) return '';
+  if (siteKey.startsWith('Baxters')) return 'baxters';
+  if (siteKey.startsWith('Barry')) return 'barry';
+  if (siteKey.startsWith('Willows')) return 'willows';
+  return 'custom';
+}
+
+// All organisation IDs (built-in keys + user-added). Used for the org dropdown.
+const BUILTIN_ORG_LABELS = {
+  fh:    { short: 'FH',   full: 'Fulton Hogan' },
+  firth: { short: 'FRTH', full: 'Firth' },
+  og:    { short: 'OG',   full: 'Oceana Gold' },
+  epl:   { short: 'EPL',  full: 'EPL' },
+  jx:    { short: 'JAX',  full: 'Jaxxons (Pumping)' },
+  pl:    { short: 'PL',   full: 'Placers' }
+};
+// Live merged org labels: built-ins + any custom orgs encountered on contacts.
+// Custom orgs are referenced by a slug (e.g. "eplcivil") and the human-readable
+// label is stored in the orgLabel field on the originating contact.
+const ORG_LABELS = new Proxy({}, {
+  get: (target, key) => {
+    if (typeof key !== 'string') return undefined;
+    if (BUILTIN_ORG_LABELS[key]) return BUILTIN_ORG_LABELS[key];
+    // Look up the human label from any contact bearing this org slug
+    const sourceContact = contacts && contacts.find ? contacts.find(c => c.org === key && c.orgLabel) : null;
+    const label = sourceContact ? sourceContact.orgLabel : (key.charAt(0).toUpperCase() + key.slice(1));
+    const short = (label || key).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5) || key.toUpperCase().slice(0, 5);
+    return { short, full: label };
+  }
+});
+
+// Built-in org id → CSS class mapping. Custom orgs use 'custom'.
+function orgCssClass(orgId) {
+  return BUILTIN_ORG_LABELS[orgId] ? orgId : 'custom';
+}
+
+// Derive contacts for a site from current contacts state
+function contactsForSite(siteKey) {
+  if (!siteKey) return [];
+  return contacts.filter(c => Array.isArray(c.sites) && c.sites.includes(siteKey));
+}
+
+// ───── STATE ─────
+let userName = localStorage.getItem('og_register_user_name') || '';
+
+let pours = [];
+let contacts = [];
+let activity = [];
+let sites = []; // user-extensible site list, loaded from storage
+let activeFilter = 'all';
+let activeSite = 'all';
+let pendingPaste = [];
+let lastSyncTime = 0;
+let saveQueue = Promise.resolve();
+let pendingSave = false;
+let expandedComments = new Set(); // pour ids whose comment row is currently expanded
+
+// ───── STORAGE ─────
+const POURS_KEY = 'og_register_pours';
+const CONTACTS_KEY = 'og_register_contacts';
+const ACTIVITY_KEY = 'og_register_activity';
+const SITES_KEY = 'og_register_sites';
+
+// Storage shim — uses Claude's window.storage if available (live shared sync),
+// otherwise falls back to localStorage so the same file works when hosted
+// on Netlify or opened directly. Local-storage mode is single-browser only.
+const SHARED_MODE = typeof window.storage !== 'undefined' && window.storage && typeof window.storage.get === 'function';
+
+const storageGet = async (key) => {
+  if (SHARED_MODE) {
+    return await window.storage.get(key, true);
+  }
+  const raw = localStorage.getItem(key);
+  return raw ? { value: raw } : null;
+};
+const storageSet = async (key, value) => {
+  if (SHARED_MODE) {
+    return await window.storage.set(key, value, true);
+  }
+  localStorage.setItem(key, value);
+};
+
+async function loadAll() {
+  setSyncState('syncing', 'Loading…');
+  try {
+    let p = null, c = null, a = null, s = null;
+    try { p = await storageGet(POURS_KEY); } catch(e) {}
+    try { c = await storageGet(CONTACTS_KEY); } catch(e) {}
+    try { a = await storageGet(ACTIVITY_KEY); } catch(e) {}
+    try { s = await storageGet(SITES_KEY); } catch(e) {}
+    pours = p ? JSON.parse(p.value) : [];
+    contacts = c ? JSON.parse(c.value) : [];
+    activity = a ? JSON.parse(a.value) : [];
+    sites = s ? JSON.parse(s.value) : [];
+    // First-run: seed contacts if empty
+    if (contacts.length === 0) {
+      contacts = JSON.parse(JSON.stringify(SEED_CONTACTS));
+      await saveContacts();
+    }
+    // Migration: lock feature was removed. Strip locked-related fields if present
+    // so old saved data doesn't carry stale state through to the new UI.
+    let stripped = 0;
+    pours.forEach(p => {
+      if (p.locked || p.lockedAt || p.lockedBy || p.unlockedAt || p.unlockedBy) {
+        delete p.locked; delete p.lockedAt; delete p.lockedBy;
+        delete p.unlockedAt; delete p.unlockedBy;
+        stripped++;
+      }
+    });
+    if (stripped > 0) {
+      await savePours();
+    }
+    // Run auto-archive sweep on load (and silently)
+    runAutoArchive();
+    lastSyncTime = Date.now();
+    setSyncState('ok', SHARED_MODE ? 'Live' : 'Local');
+    renderAll();
+  } catch (err) {
+    setSyncState('err', 'Offline');
+    console.error('Load failed', err);
+  }
+}
+
+async function saveSites() {
+  saveQueue = saveQueue.then(async () => {
+    setSyncState('syncing', 'Saving…');
+    try {
+      await storageSet(SITES_KEY, JSON.stringify(sites));
+      lastSyncTime = Date.now();
+      setSyncState('ok', SHARED_MODE ? 'Live' : 'Local');
+    } catch (err) {
+      setSyncState('err', 'Save failed');
+      console.error(err);
+    }
+  });
+  return saveQueue;
+}
+
+async function savePours() {
+  saveQueue = saveQueue.then(async () => {
+    setSyncState('syncing', 'Saving…');
+    try {
+      await storageSet(POURS_KEY, JSON.stringify(pours));
+      lastSyncTime = Date.now();
+      setSyncState('ok', SHARED_MODE ? 'Live' : 'Local');
+    } catch (err) {
+      setSyncState('err', 'Save failed');
+      console.error(err);
+    }
+  });
+  return saveQueue;
+}
+
+async function saveContacts() {
+  saveQueue = saveQueue.then(async () => {
+    setSyncState('syncing', 'Saving…');
+    try {
+      await storageSet(CONTACTS_KEY, JSON.stringify(contacts));
+      lastSyncTime = Date.now();
+      setSyncState('ok', SHARED_MODE ? 'Live' : 'Local');
+    } catch (err) {
+      setSyncState('err', 'Save failed');
+      console.error(err);
+    }
+  });
+  return saveQueue;
+}
+
+async function saveActivity() {
+  try {
+    await storageSet(ACTIVITY_KEY, JSON.stringify(activity.slice(-50)));
+  } catch (err) {
+    console.error('Activity save failed', err);
+  }
+}
+
+function setSyncState(state, text) {
+  const dot = document.getElementById('syncDot');
+  dot.className = 'sync-indicator' + (state === 'syncing' ? ' syncing' : '');
+  dot.style.background = state === 'err' ? 'var(--danger)' : (state === 'syncing' ? 'var(--accent)' : '#4ade80');
+  document.getElementById('syncText').textContent = text;
+  document.getElementById('lastUpdate').textContent = lastSyncTime ? new Date(lastSyncTime).toLocaleTimeString('en-NZ', {hour:'2-digit', minute:'2-digit'}) : '—';
+}
+
+// poll for changes from other users every 8s
+async function pollChanges() {
+  try {
+    let p = null;
+    try { p = await storageGet(POURS_KEY); } catch(e) {}
+    if (p) {
+      const incoming = JSON.parse(p.value);
+      if (JSON.stringify(incoming) !== JSON.stringify(pours)) {
+        pours = incoming;
+        renderAll();
+      }
+    }
+    let c = null;
+    try { c = await storageGet(CONTACTS_KEY); } catch(e) {}
+    if (c) {
+      const incoming = JSON.parse(c.value);
+      if (JSON.stringify(incoming) !== JSON.stringify(contacts)) {
+        contacts = incoming;
+        renderAll();
+      }
+    }
+    let a = null;
+    try { a = await storageGet(ACTIVITY_KEY); } catch(e) {}
+    if (a) {
+      const incoming = JSON.parse(a.value);
+      if (JSON.stringify(incoming) !== JSON.stringify(activity)) {
+        activity = incoming;
+        renderActivity();
+      }
+    }
+    let s = null;
+    try { s = await storageGet(SITES_KEY); } catch(e) {}
+    if (s) {
+      const incoming = JSON.parse(s.value);
+      if (JSON.stringify(incoming) !== JSON.stringify(sites)) {
+        sites = incoming;
+        renderAll();
+      }
+    }
+    lastSyncTime = Date.now();
+    setSyncState('ok', SHARED_MODE ? 'Live' : 'Local');
+  } catch (err) {
+    setSyncState('err', 'Offline');
+  }
+}
+if (SHARED_MODE) setInterval(pollChanges, 8000);
+
+// ───── HELPERS ─────
+function uid() { return 'p_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function fmtDate(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y.slice(2)}`;
+}
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+function inDays(iso, days) {
+  if (!iso) return false;
+  const t = new Date(iso);
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = (t - now) / (1000 * 60 * 60 * 24);
+  return diff >= 0 && diff <= days;
+}
+function logActivity(action, pourDesc) {
+  activity.push({
+    when: Date.now(),
+    user: userName || 'Anonymous',
+    action,
+    pourDesc: pourDesc || ''
+  });
+  if (activity.length > 50) activity = activity.slice(-50);
+  saveActivity();
+}
+function toast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 2500);
+}
+function poStatus(p) {
+  if (p.delivered) return 'poured';
+  if (p.po && p.po.trim().length >= 3) return 'ready';
+  return 'awaiting';
+}
+
+// ───── USER IDENTITY ─────
+function openUserPicker() {
+  renderUserPicker();
+  openModal('userPickerModal');
+}
+// Legacy alias — some old gates still call promptUserName
+function promptUserName() { openUserPicker(); }
+
+function renderUserPicker() {
+  const wrap = document.getElementById('user-picker-list');
+  const meLower = (userName || '').toLowerCase().trim();
+
+  // Group by org for clarity
+  const byOrg = {};
+  contacts.forEach(c => {
+    if (!byOrg[c.org]) byOrg[c.org] = [];
+    byOrg[c.org].push(c);
+  });
+  // Order: known orgs in their natural order, then any custom orgs alphabetically
+  const knownOrder = ['fh', 'firth', 'og', 'epl', 'jx', 'pl'];
+  const customOrgs = Object.keys(byOrg).filter(o => !knownOrder.includes(o)).sort();
+  const orgOrder = [...knownOrder.filter(o => byOrg[o]), ...customOrgs];
+
+  let html = '';
+  orgOrder.forEach(org => {
+    const list = byOrg[org];
+    if (!list || list.length === 0) return;
+    const orgFull = ORG_LABELS[org] ? ORG_LABELS[org].full : org;
+    const orgShort = ORG_LABELS[org] ? ORG_LABELS[org].short : org.toUpperCase();
+    html += `<div style="font-family:'Share Tech Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted); margin:8px 0 4px;">${orgFull}</div>`;
+    list.forEach(c => {
+      const isMe = c.name.toLowerCase().trim() === meLower;
+      html += `<div onclick="pickUser('${c.id}')"
+                   style="background:var(--bg); border:1px solid ${isMe ? 'var(--accent)' : 'var(--border)'}; padding:9px 12px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px;"
+                   onmouseover="this.style.borderColor='var(--accent)'"
+                   onmouseout="this.style.borderColor='${isMe ? 'var(--accent)' : 'var(--border)'}'">
+        <div style="min-width:0; flex:1;">
+          <span class="org-tag ${orgCssClass(c.org)}">${orgShort}</span>
+          <span style="font-family:'Rajdhani',sans-serif; font-weight:600; margin-left:6px; letter-spacing:0.4px;">${c.name}</span>
+          <div style="color:var(--text-2); font-size:12px; margin-top:2px;">${c.role || ''}</div>
+        </div>
+        ${isMe ? '<span style="font-family:\'Share Tech Mono\',monospace; font-size:10px; color:var(--accent); letter-spacing:1px;">CURRENT</span>' : ''}
+      </div>`;
+    });
+  });
+
+  // "Other" option — adds yourself to the directory
+  html += `<div onclick="pickUserOther()"
+                style="margin-top:14px; background:rgba(245,158,11,0.06); border:1px dashed var(--accent); padding:12px 14px; cursor:pointer; text-align:center;"
+                onmouseover="this.style.background='rgba(245,158,11,0.12)'"
+                onmouseout="this.style.background='rgba(245,158,11,0.06)'">
+    <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.5px; color:var(--accent);">Other — I'm not on this list</div>
+    <div style="font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); margin-top:4px; letter-spacing:0.5px;">You'll be prompted to add your name and contact details to the directory first</div>
+  </div>`;
+
+  wrap.innerHTML = html;
+}
+
+function pickUser(contactId) {
+  const c = contacts.find(x => x.id === contactId);
+  if (!c) return;
+  setUserName(c.name);
+  closeModal('userPickerModal');
+  toast('Signed in as ' + c.name);
+}
+
+function pickUserOther() {
+  closeModal('userPickerModal');
+  toast('Add your name and contact details below', false);
+  openContactModal(null);
+  // Mark this modal as "after-other" so we know to auto-set userName once saved
+  window._afterOtherPicker = true;
+}
+
+function setUserName(name) {
+  userName = name || '';
+  localStorage.setItem('og_register_user_name', userName);
+  renderUserName();
+}
+
+function renderUserName() {
+  const btn = document.getElementById('userNameBtn');
+  const lbl = document.getElementById('userNameLabel');
+  if (userName) {
+    lbl.textContent = userName;
+    btn.classList.add('set');
+  } else {
+    lbl.textContent = 'Choose name';
+    btn.classList.remove('set');
+  }
+}
+
+// Is the current user registered in the contact directory?
+function isRegistered() {
+  if (!userName) return false;
+  const me = userName.toLowerCase().trim();
+  return contacts.some(c => c.name.toLowerCase().trim() === me);
+}
+
+// Gate any state-changing action: user must have selected a directory entry first.
+function requireRegistered() {
+  if (isRegistered()) return true;
+  toast('Pick your name from the directory (top-right) before making changes.', true);
+  openUserPicker();
+  return false;
+}
+
+// Legacy ensureUserName — kept as a thin wrapper around requireRegistered
+function ensureUserName() {
+  return isRegistered() ? userName : null;
+}
+
+// ───── AUTO-ARCHIVE ─────
+// Mark poured pours as archived once they're more than 30 days past pour date.
+// Idempotent — safe to call repeatedly. Doesn't delete anything.
+function runAutoArchive() {
+  const now = Date.now();
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  let archived = 0;
+  pours.forEach(p => {
+    if (p.archivedAt) return;
+    if (!p.delivered) return;
+    if (!p.pourDate) return;
+    const pourTime = new Date(p.pourDate + 'T00:00:00').getTime();
+    if (isNaN(pourTime)) return;
+    if (now - pourTime > THIRTY_DAYS) {
+      p.archivedAt = now;
+      archived++;
+    }
+  });
+  if (archived > 0) {
+    savePours();
+  }
+}
+
+// ───── CRUD ─────
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Per-site default tests required. Add to this map as new defaults emerge.
+const SITE_DEFAULT_TESTS = {
+  'Baxters Rd': '1 x 7 days, 4 x 28 days',
+  'Barry Rd':   '1 x 7 days, 2 x 28 days',
+  'Willows Rd': '1 x 7 days, 2 x 28 days'
+};
+
+function populatePourSiteDropdown(selectedSite) {
+  const sel = document.getElementById('np-site');
+  const allSites = getAllSites();
+  let html = '<option value="">-- choose site --</option>';
+  allSites.forEach(s => {
+    const sel = (s === selectedSite) ? ' selected' : '';
+    html += `<option value="${s.replace(/"/g,'&quot;')}"${sel}>${s}</option>`;
+  });
+  sel.innerHTML = html;
+}
+
+function onSiteChange() {
+  const siteKey = document.getElementById('np-site').value;
+  if (!siteKey) return;
+  // Auto-fill primary contact from directory
+  const siteInfo = SITE_LABELS[siteKey];
+  const clientOrg = siteInfo ? siteInfo.client : null;
+  const siteContacts = contactsForSite(siteKey);
+  const primary = siteContacts.find(c => c.org === clientOrg) || siteContacts[0];
+  if (primary) {
+    const contactInput = document.getElementById('np-contact');
+    if (!contactInput.value.trim()) contactInput.value = primary.name;
+  }
+  // Auto-fill default tests required if blank
+  const testsInput = document.getElementById('np-tests');
+  if (!testsInput.value.trim() && SITE_DEFAULT_TESTS[siteKey]) {
+    testsInput.value = SITE_DEFAULT_TESTS[siteKey];
+  }
+}
+
+document.getElementById('addBtn').addEventListener('click', () => {
+  if (!requireRegistered()) return;
+  document.getElementById('np-date').value = '';
+  document.getElementById('np-time').value = '';
+  document.getElementById('np-desc').value = '';
+  populatePourSiteDropdown('');
+  document.getElementById('np-loc').value = '';
+  document.getElementById('np-contact').value = '';
+  document.getElementById('np-mix').value = '';
+  document.getElementById('np-qty').value = '';
+  document.getElementById('np-po').value = '';
+  document.getElementById('np-tests').value = '';
+  document.getElementById('np-pump').checked = false;
+  document.getElementById('np-pump-crew').value = '';
+  document.getElementById('np-pump-crew').style.display = 'none';
+  document.getElementById('np-placers').checked = false;
+  document.getElementById('np-placers-crew').value = '';
+  document.getElementById('np-placers-crew').style.display = 'none';
+  openModal('addModal');
+});
+
+function saveNewPour() {
+  if (!requireRegistered()) return;
+  const desc = document.getElementById('np-desc').value.trim();
+  if (!desc) { toast('Pour description required', true); return; }
+  const p = {
+    id: uid(),
+    pourDate: document.getElementById('np-date').value,
+    pourTime: document.getElementById('np-time').value.trim(),
+    description: desc,
+    site: document.getElementById('np-site').value,
+    location: document.getElementById('np-loc').value.trim(),
+    contact: document.getElementById('np-contact').value.trim(),
+    mix: document.getElementById('np-mix').value.trim(),
+    quantity: parseFloat(document.getElementById('np-qty').value) || 0,
+    po: document.getElementById('np-po').value.trim(),
+    tests: document.getElementById('np-tests').value.trim(),
+    concPump: !!document.getElementById('np-pump').checked,
+    concPumpCrew: document.getElementById('np-pump-crew').value.trim(),
+    placers: !!document.getElementById('np-placers').checked,
+    placersCrew: document.getElementById('np-placers-crew').value.trim(),
+    extraContacts: [],
+    comments: '',
+    delivered: false,
+    addedBy: userName || 'Anonymous',
+    addedAt: Date.now()
+  };
+  pours.push(p);
+  logActivity('added pour', desc);
+  savePours();
+  renderAll();
+  closeModal('addModal');
+  toast('Pour added');
+}
+
+function deletePour(id) {
+  const p = pours.find(x => x.id === id);
+  if (!p) return;
+  if (!requireRegistered()) return;
+  if (!confirm(`Remove "${p.description}" from the register?`)) return;
+  pours = pours.filter(x => x.id !== id);
+  logActivity('removed pour', p.description);
+  savePours();
+  renderAll();
+}
+
+function updateField(id, field, value) {
+  const p = pours.find(x => x.id === id);
+  if (!p) return;
+  if (!requireRegistered()) {
+    renderTable(); // restore input value
+    return;
+  }
+  const old = p[field];
+  if (old === value) return;
+  p[field] = value;
+
+  // Build clear "old → new" log entries so mismatches are obvious
+  const fieldLabels = {
+    po: 'PO',
+    pourDate: 'date',
+    pourTime: 'time',
+    description: 'description',
+    site: 'site',
+    location: 'location',
+    contact: 'contact',
+    mix: 'mix',
+    quantity: 'quantity',
+    tests: 'tests',
+    placersCrew: 'placers crew',
+    concPumpCrew: 'conc pump crew'
+  };
+  const label = fieldLabels[field] || field;
+  const oldStr = (old === '' || old == null) ? '(blank)' : String(old);
+  const newStr = (value === '' || value == null) ? '(blank)' : String(value);
+  let action;
+  if (oldStr === '(blank)') {
+    action = `set ${label} to "${newStr}" on`;
+  } else if (newStr === '(blank)') {
+    action = `cleared ${label} (was "${oldStr}") on`;
+  } else {
+    action = `changed ${label} from "${oldStr}" to "${newStr}" on`;
+  }
+  logActivity(action, p.description);
+
+  savePours();
+  renderKPIs();
+  renderActivity();
+}
+
+function togglePoured(id) {
+  if (!requireRegistered()) return;
+  const p = pours.find(x => x.id === id);
+  if (!p) return;
+  if (!p.po && !p.delivered) {
+    if (!confirm('No PO recorded yet. Mark as poured anyway?')) return;
+  }
+  p.delivered = !p.delivered;
+  if (p.delivered) p.deliveredAt = Date.now();
+  logActivity(p.delivered ? 'marked poured:' : 'unmarked poured:', p.description);
+  savePours();
+  renderAll();
+}
+
+// Toggle Placers required Y/N for a pour. When set to Y, an inline crew name field appears.
+function togglePlacers(id) {
+  if (!requireRegistered()) return;
+  const p = pours.find(x => x.id === id);
+  if (!p) return;
+  p.placers = !p.placers;
+  if (!p.placers) p.placersCrew = ''; // clear crew when toggling off
+  logActivity(p.placers ? 'set placers REQUIRED for' : 'set placers NOT required for', p.description);
+  savePours();
+  renderAll();
+}
+
+// Toggle Conc Pump required Y/N for a pour. Like Placers — Y reveals an inline crew name field.
+function togglePump(id) {
+  if (!requireRegistered()) return;
+  const p = pours.find(x => x.id === id);
+  if (!p) return;
+  p.concPump = !p.concPump;
+  if (!p.concPump) p.concPumpCrew = ''; // clear crew when toggling off
+  logActivity(p.concPump ? 'set conc pump REQUIRED for' : 'set conc pump NOT required for', p.description);
+  savePours();
+  renderAll();
+}
+
+// Open a small inline prompt to view/edit the tests required string.
+// We use prompt() rather than a full modal — short text, low ceremony.
+function openTestsEditor(id) {
+  if (!requireRegistered()) return;
+  const p = pours.find(x => x.id === id);
+  if (!p) return;
+  const current = p.tests || '';
+  const next = prompt(
+    'Tests required for this pour:\n' +
+    '(Leave blank for none. Click OK to save.)\n\n' +
+    'Examples:\n' +
+    '  1 x 7 days, 4 x 28 days\n' +
+    '  1 x 7 days, 2 x 28 days\n',
+    current
+  );
+  if (next === null) return; // cancelled
+  const trimmed = next.trim();
+  if (trimmed === current) return;
+  updateField(id, 'tests', trimmed);
+}
+
+// ───── COMMENTS ─────
+// Comments are a single string per pour, with new entries appended in the form:
+//   [DD/MM HH:MM · Role] text
+// Older entries appear at the top, newest at the bottom.
+
+function commentCount(p) {
+  if (!p.comments) return 0;
+  return (p.comments.match(/^\[/gm) || []).length;
+}
+
+function toggleComments(pourId) {
+  if (expandedComments.has(pourId)) expandedComments.delete(pourId);
+  else expandedComments.add(pourId);
+  renderTable();
+  // After re-render, focus the textarea if expanded
+  if (expandedComments.has(pourId)) {
+    setTimeout(() => {
+      const t = document.querySelector(`textarea[data-comment-pour="${pourId}"]`);
+      if (t) t.focus();
+    }, 0);
+  }
+}
+
+function addComment(pourId) {
+  if (!requireRegistered()) return;
+  const t = document.querySelector(`textarea[data-comment-pour="${pourId}"]`);
+  if (!t) return;
+  const text = t.value.trim();
+  if (!text) { toast('Nothing to post', true); return; }
+  const p = pours.find(x => x.id === pourId);
+  if (!p) return;
+  const who = userName;
+
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mi = String(now.getMinutes()).padStart(2, '0');
+  const stamp = `[${dd}/${mm} ${hh}:${mi} · ${who}]`;
+  const entry = stamp + ' ' + text;
+
+  p.comments = p.comments ? (p.comments + '\n\n' + entry) : entry;
+  logActivity('commented on', p.description);
+  savePours();
+  renderTable();
+  renderActivity();
+  toast('Comment posted');
+}
+
+// Format the comments string for display, colorising the [stamp] prefix by role
+function renderCommentHistory(commentsStr) {
+  if (!commentsStr || !commentsStr.trim()) {
+    return '<div class="comment-history empty">No comments yet — be the first to add one.</div>';
+  }
+  const escaped = commentsStr
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  // Find [date · Name] prefixes and wrap them
+  const html = escaped.replace(/\[([^·\]]+)·\s*([^\]]+)\]/g, (m, ts, who) => {
+    const whoClean = who.trim();
+    return `<span class="stamp">[${ts.trim()} · ${whoClean}]</span>`;
+  });
+  return '<div class="comment-history">' + html + '</div>';
+}
+
+// ───── EXTRA CONTACTS ON A POUR ─────
+function openAddContactToPour(pourId) {
+  const p = pours.find(x => x.id === pourId);
+  if (!p) return;
+  document.getElementById('acp-pourId').value = pourId;
+  renderAddContactPicker(pourId);
+  openModal('addContactToPourModal');
+}
+
+function renderAddContactPicker(pourId) {
+  const p = pours.find(x => x.id === pourId);
+  if (!p) return;
+  const wrap = document.getElementById('acp-list');
+  const already = new Set(Array.isArray(p.extraContacts) ? p.extraContacts : []);
+  // Also exclude the primary contact (matched by first-name)
+  const primaryFirst = (p.contact || '').toLowerCase().split(' ')[0];
+
+  // Group by org for clarity
+  const orgOrder = ['fh', 'firth', 'jx', 'pl'];
+  const grouped = {};
+  contacts.forEach(c => {
+    if (already.has(c.id)) return;
+    if (primaryFirst && c.name.toLowerCase().split(' ')[0] === primaryFirst) return;
+    if (!grouped[c.org]) grouped[c.org] = [];
+    grouped[c.org].push(c);
+  });
+
+  let html = '';
+  orgOrder.forEach(org => {
+    const list = grouped[org];
+    if (!list || list.length === 0) return;
+    const orgFull = ORG_LABELS[org] ? ORG_LABELS[org].full : org;
+    html += `<div style="font-family:'Share Tech Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted); margin:8px 0 4px;">${orgFull}</div>`;
+    list.forEach(c => {
+      const orgLabel = ORG_LABELS[c.org] ? ORG_LABELS[c.org].short : c.org.toUpperCase();
+      html += `<div onclick="addContactToPour('${pourId}','${c.id}')"
+                   style="background:var(--bg); border:1px solid var(--border); padding:8px 12px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:8px;"
+                   onmouseover="this.style.borderColor='var(--accent)'"
+                   onmouseout="this.style.borderColor='var(--border)'">
+        <div>
+          <span class="org-tag ${orgCssClass(c.org)}">${orgLabel}</span>
+          <span style="font-family:'Rajdhani',sans-serif; font-weight:600; margin-left:4px;">${c.name}</span>
+          <span style="color:var(--text-2); font-size:12px; margin-left:6px;">${c.role || ''}</span>
+        </div>
+        <div style="font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted);">+ attach</div>
+      </div>`;
+    });
+  });
+  if (!html) {
+    html = '<div style="padding:24px; text-align:center; color:var(--muted); font-style:italic;">Everyone in the directory is already attached to this pour.</div>';
+  }
+  wrap.innerHTML = html;
+}
+
+function addContactToPour(pourId, contactId) {
+  if (!requireRegistered()) return;
+  const p = pours.find(x => x.id === pourId);
+  const c = contacts.find(x => x.id === contactId);
+  if (!p || !c) return;
+  if (!Array.isArray(p.extraContacts)) p.extraContacts = [];
+  if (p.extraContacts.includes(contactId)) return;
+  p.extraContacts.push(contactId);
+  logActivity('attached ' + c.name + ' to', p.description);
+  savePours();
+  renderTable();
+  renderActivity();
+  renderAddContactPicker(pourId); // refresh picker so they don't re-add
+  toast(c.name + ' attached');
+}
+
+function removeExtraContact(pourId, contactId) {
+  if (!requireRegistered()) return;
+  const p = pours.find(x => x.id === pourId);
+  const c = contacts.find(x => x.id === contactId);
+  if (!p) return;
+  p.extraContacts = (p.extraContacts || []).filter(id => id !== contactId);
+  if (c) logActivity('detached ' + c.name + ' from', p.description);
+  savePours();
+  renderTable();
+  renderActivity();
+}
+
+// ───── PASTE / PARSE ─────
+document.getElementById('pasteBtn').addEventListener('click', () => {
+  if (!requireRegistered()) return;
+  document.getElementById('pasteArea').value = '';
+  document.getElementById('pastePreview').innerHTML = '';
+  document.getElementById('pdfStatus').textContent = '';
+  document.getElementById('confirmPasteBtn').disabled = true;
+  pendingPaste = [];
+  openModal('pasteModal');
+});
+
+// PDF drag/drop & file input
+(function setupPdfDrop() {
+  const zone = document.getElementById('pdfDropZone');
+  const input = document.getElementById('pdfFileInput');
+
+  zone.addEventListener('click', () => input.click());
+
+  zone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    zone.style.borderColor = 'var(--fh)';
+    zone.style.background = 'rgba(59,130,246,0.12)';
+  });
+  zone.addEventListener('dragleave', () => {
+    zone.style.borderColor = 'var(--border-2)';
+    zone.style.background = 'var(--bg)';
+  });
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.style.borderColor = 'var(--border-2)';
+    zone.style.background = 'var(--bg)';
+    const file = e.dataTransfer.files[0];
+    if (file) handlePdfFile(file);
+  });
+
+  input.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) handlePdfFile(file);
+  });
+})();
+
+async function handlePdfFile(file) {
+  const status = document.getElementById('pdfStatus');
+  if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+    status.textContent = 'That doesn\'t look like a PDF.';
+    status.style.color = 'var(--danger)';
+    return;
+  }
+  if (!window.pdfjsLib) {
+    status.textContent = 'PDF library not loaded — try the paste option instead.';
+    status.style.color = 'var(--danger)';
+    return;
+  }
+  status.textContent = 'Reading ' + file.name + '...';
+  status.style.color = 'var(--text-2)';
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    // Collect both:
+    //   allItems — flat list of {x, y, text} (for the rotated/header-anchored parser)
+    //   allRows  — items grouped by y (for the row-based fallback parser)
+    const allItems = [];
+    const allRows = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const itemsByRow = {};
+      textContent.items.forEach(item => {
+        if (!item.str || !item.str.trim()) return;
+        const x = item.transform[4];
+        const y = item.transform[5];
+        allItems.push({ x, y, text: item.str });
+        const yKey = Math.round(y / 2) * 2;
+        if (!itemsByRow[yKey]) itemsByRow[yKey] = [];
+        itemsByRow[yKey].push({ x, text: item.str });
+      });
+      const ys = Object.keys(itemsByRow).map(Number).sort((a, b) => b - a);
+      ys.forEach(y => {
+        const row = itemsByRow[y]
+          .sort((a, b) => a.x - b.x)
+          .filter(it => it.text.trim().length > 0);
+        if (row.length > 0) allRows.push({ y, items: row });
+      });
+    }
+
+    // Strategy chain — try the rotated/header-anchored parser first because
+    // FH's exported register has columns that span rows.
+    let parsed = parsePdfRotated(allItems);
+    if (parsed.length === 0) parsed = parsePdfRows(allRows);
+    pendingPaste = parsed;
+
+    if (parsed.length === 0) {
+      status.textContent = '⚠ Could not extract any pour rows from this PDF.';
+      status.style.color = 'var(--danger)';
+      return;
+    }
+
+    status.textContent = '✓ Extracted ' + parsed.length + ' pour' + (parsed.length === 1 ? '' : 's') + ' from ' + pdf.numPages + ' page' + (pdf.numPages === 1 ? '' : 's');
+    status.style.color = 'var(--accent3)';
+
+    renderPastePreview(parsed);
+
+    // Also populate the paste textarea with a readable representation in case user wants to inspect
+    document.getElementById('pasteArea').value = allRows.map(r => r.items.map(it => it.text).join('  ')).join('\n');
+  } catch (err) {
+    console.error(err);
+    status.textContent = 'Failed to read PDF: ' + err.message;
+    status.style.color = 'var(--danger)';
+  }
+}
+
+// ───── ROTATED-TABLE PARSER ─────
+// FH's exported concrete register PDF lays the table out with columns spanning
+// the y-axis: each visible column header sits at the bottom of its column (low y)
+// and the values stack above it (higher y), with each visible row appearing at a
+// different x-position. This parser anchors on header text strings, gathers
+// values within a vertical band above each header, then clusters x-positions to
+// reconstruct the visible rows.
+function parsePdfRotated(allItems) {
+  // Per-header y-tolerance (how far above the header label we look for values).
+  // Values that sit closer to their header use small tolerances; stacked numeric
+  // columns whose values are 12–20pt above their header use wider ones.
+  const HEADER_SPECS = [
+    { name: 'Pour Description', tolerance: 8  },
+    { name: 'Location',         tolerance: 8  },
+    { name: 'Contact',          tolerance: 22 },
+    { name: 'Mix',              tolerance: 8  },
+    { name: 'Quantity',         tolerance: 24 },
+    { name: 'Delivered',        tolerance: 22 },
+    { name: 'Tests Required',   tolerance: 14 },
+    { name: 'Conc Pump',        tolerance: 22 },
+    { name: 'Placers',          tolerance: 22 },
+    { name: 'Time',             tolerance: 8  },
+    { name: 'Changes',          tolerance: 8  },
+    { name: 'Date',             tolerance: 8  },
+    { name: 'Poured',           tolerance: 14 }
+  ];
+  // Find each header item by exact text match (single occurrence)
+  const headerItems = {};
+  HEADER_SPECS.forEach(spec => {
+    const matches = allItems.filter(it => it.text.trim() === spec.name);
+    if (matches.length === 1) {
+      headerItems[spec.name] = { item: matches[0], tolerance: spec.tolerance };
+    }
+  });
+  // Need at least Description + a couple of others to consider this layout valid
+  const found = Object.keys(headerItems);
+  if (!found.includes('Pour Description') || found.length < 4) return [];
+
+  // For each header, gather values: x > headerX, y above headerY by 0..tolerance
+  const columnValues = {};
+  for (const [name, h] of Object.entries(headerItems)) {
+    const vals = allItems
+      .filter(it => {
+        if (it.text === name) return false;
+        if (it.x <= h.item.x + 1) return false;
+        const dy = it.y - h.item.y;
+        return dy >= 0 && dy <= h.tolerance;
+      })
+      .sort((a, b) => a.x - b.x);
+    columnValues[name] = vals;
+  }
+
+  // Cluster x-positions across all columns into row centres
+  const CLUSTER_TOL = 3.5;
+  const allXs = [];
+  Object.values(columnValues).forEach(vals => vals.forEach(v => allXs.push(v.x)));
+  if (allXs.length === 0) return [];
+  allXs.sort((a, b) => a - b);
+  const clusters = [];
+  allXs.forEach(x => {
+    const last = clusters[clusters.length - 1];
+    if (last && x - last.max <= CLUSTER_TOL) {
+      last.xs.push(x); last.max = x;
+    } else {
+      clusters.push({ xs: [x], max: x });
+    }
+  });
+  const rowCenters = clusters.map(c => c.xs.reduce((a, b) => a + b, 0) / c.xs.length);
+
+  // Build rows by sampling each column at each row centre
+  const rawRows = rowCenters.map(cx => {
+    const r = { _x: cx };
+    for (const [name, vals] of Object.entries(columnValues)) {
+      const candidates = vals.filter(v => Math.abs(v.x - cx) <= CLUSTER_TOL);
+      if (candidates.length > 0) {
+        candidates.sort((a, b) => Math.abs(a.x - cx) - Math.abs(b.x - cx));
+        r[name] = candidates[0].text;
+      } else {
+        r[name] = '';
+      }
+    }
+    return r;
+  });
+
+  // Convert to the canonical pour shape used by the rest of the app
+  const parsed = [];
+  rawRows.forEach(r => {
+    const desc = (r['Pour Description'] || '').trim();
+    if (!desc) return; // not a real row
+
+    // Date: prefer the active "Date" column; fall back to "Changes" if Date is empty
+    const dateStr = (r['Date'] || '').match(/\d{1,2}\/\d{1,2}\/\d{2,4}/);
+    const changesStr = (r['Changes'] || '').match(/\d{1,2}\/\d{1,2}\/\d{2,4}/);
+    let pourDate = '';
+    if (dateStr) pourDate = isoFromDmy(dateStr[0]);
+    else if (changesStr) pourDate = isoFromDmy(changesStr[0]);
+
+    // Quantity
+    const qtyMatch = (r['Quantity'] || '').match(/\d+\.?\d*/);
+    const quantity = qtyMatch ? parseFloat(qtyMatch[0]) : 0;
+
+    // Y/N for placers and conc pump
+    const placersYN = (r['Placers'] || '').toLowerCase().startsWith('y');
+    const concPumpYN = (r['Conc Pump'] || '').toLowerCase().startsWith('y');
+
+    const contact = (r['Contact'] || '').trim();
+    const site = siteFromContact(contact);
+
+    parsed.push({
+      pourDate,
+      pourTime: (r['Time'] || '').trim(),
+      description: desc,
+      site,
+      location: (r['Location'] || '').trim(),
+      contact,
+      mix: (r['Mix'] || '').trim(),
+      quantity,
+      po: '',
+      tests: (r['Tests Required'] || '').trim(),
+      concPump: concPumpYN,
+      concPumpCrew: '',
+      placers: placersYN,
+      placersCrew: '',
+      delivered: false
+    });
+  });
+  return parsed;
+}
+
+// Auto-derive site from contact name (Skye→Baxters, Emma→Barry, Marie→Willows)
+function siteFromContact(contactName) {
+  if (!contactName) return '';
+  const n = contactName.toLowerCase().trim();
+  if (n.startsWith('skye')) return 'Baxters Rd';
+  if (n.startsWith('emma')) return 'Barry Rd';
+  if (n.startsWith('marie')) return 'Willows Rd';
+  return '';
+}
+
+// Convert dd/mm/yy or dd/mm/yyyy to ISO
+function isoFromDmy(s) {
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (!m) return '';
+  const [, d, mo, y] = m;
+  const yr = y.length === 2 ? '20' + y : y;
+  return `${yr}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}`;
+}
+
+// Find the column boundaries from the header row
+function detectColumns(allRows) {
+  // Look for a row that contains "Date" AND "Time" AND ("Description" or "Pour")
+  for (const row of allRows) {
+    const fullText = row.items.map(it => it.text).join(' ').toLowerCase();
+    if (/\bdate\b/.test(fullText) && /\btime\b/.test(fullText) && /(description|pour)/.test(fullText)) {
+      // Build a map: column name → x position
+      const cols = {};
+      row.items.forEach(it => {
+        const t = it.text.trim().toLowerCase();
+        if (t === 'poured') cols.poured = it.x;
+        else if (t === 'date') cols.date = it.x;
+        else if (t === 'changes') cols.changes = it.x;
+        else if (t === 'time') cols.time = it.x;
+        else if (t === 'pour' || /^pour description$/.test(t) || t === 'description') cols.description = it.x;
+        else if (t === 'location') cols.location = it.x;
+        else if (t === 'contact') cols.contact = it.x;
+        else if (t === 'mix') cols.mix = it.x;
+        else if (t === 'quantity') cols.quantity = it.x;
+        else if (t === 'delivered') cols.delivered = it.x;
+        else if (t === 'tests' || /^tests required$/.test(t)) cols.tests = it.x;
+        else if (t === 'conc' || /^conc pump$/.test(t)) cols.pump = it.x;
+        else if (t === 'placers') cols.placers = it.x;
+      });
+      return cols;
+    }
+  }
+  return null;
+}
+
+// Slot text items into named columns based on x-position
+function slotItemsByColumn(items, cols) {
+  // Define column order
+  const order = ['poured', 'date', 'changes', 'time', 'description', 'location', 'contact', 'mix', 'quantity', 'delivered', 'tests', 'pump', 'placers'];
+  const presentCols = order.filter(c => cols[c] !== undefined);
+  const slots = {};
+  presentCols.forEach(c => slots[c] = []);
+
+  // Compute the midpoint between this column and the next — that's the boundary
+  // An item belongs to the column whose x range it falls in
+  const boundaries = presentCols.map((c, i) => {
+    const colX = cols[c];
+    const nextX = i + 1 < presentCols.length ? cols[presentCols[i + 1]] : Infinity;
+    // Boundary midway between this col and next
+    const upper = nextX === Infinity ? Infinity : (colX + nextX) / 2;
+    return { name: c, lower: colX - 10, upper };
+  });
+
+  items.forEach(item => {
+    let assigned = null;
+    for (const b of boundaries) {
+      if (item.x >= b.lower && item.x < b.upper) {
+        assigned = b.name;
+        break;
+      }
+    }
+    if (!assigned) {
+      // Fallback to nearest column
+      let nearest = presentCols[0];
+      for (const c of presentCols) {
+        if (Math.abs(item.x - cols[c]) < Math.abs(item.x - cols[nearest])) nearest = c;
+      }
+      assigned = nearest;
+    }
+    if (assigned) slots[assigned].push(item.text);
+  });
+  return slots;
+}
+
+function parsePdfRows(allRows) {
+  const cols = detectColumns(allRows);
+  const parsed = [];
+
+  if (!cols || Object.keys(cols).length < 4) {
+    // Fall back to text-based parser
+    const text = allRows.map(r => r.items.map(it => it.text).join('  ')).join('\n');
+    return parseTextRows(text);
+  }
+
+  // For each row, slot items by column. Skip the header row.
+  for (const row of allRows) {
+    const fullText = row.items.map(it => it.text).join(' ');
+    if (/^\s*Poured\s+Date\s+Changes/i.test(fullText)) continue; // header
+    if (fullText.trim().length < 5) continue; // empty
+
+    const slots = slotItemsByColumn(row.items, cols);
+    const get = (key) => (slots[key] || []).join(' ').trim();
+
+    // Extract dates — 'Date' column is the active scheduled date,
+    // 'Changes' column shows what it was previously (for audit), so prefer Date
+    const dateStr = get('date');
+    const changesStr = get('changes');
+    let dateToUse = '';
+    if (dateStr && /\d{1,2}\/\d{1,2}\/\d{2,4}/.test(dateStr)) dateToUse = dateStr.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/)[0];
+    else if (changesStr && /\d{1,2}\/\d{1,2}\/\d{2,4}/.test(changesStr)) dateToUse = changesStr.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/)[0];
+    const pourDate = dateToUse ? isoFromDmy(dateToUse) : '';
+
+    const time = get('time');
+    const description = get('description');
+    const location = get('location');
+    const contact = get('contact');
+    const mix = get('mix');
+    const qtyStr = get('quantity');
+    const tests = get('tests');
+
+    // Normalise quantity to a number
+    const qtyMatch = qtyStr.match(/(\d+\.?\d*)/);
+    const quantity = qtyMatch ? parseFloat(qtyMatch[1]) : 0;
+
+    // Site comes from contact name
+    const site = siteFromContact(contact);
+
+    // Skip rows that have no real content
+    if (!description && !mix && !time && !pourDate) continue;
+
+    parsed.push({
+      pourDate,
+      pourTime: time,
+      description,
+      site,
+      location,
+      contact,
+      mix,
+      quantity,
+      po: '',
+      tests,
+      delivered: false
+    });
+  }
+
+  return parsed;
+}
+
+// Fallback: simple text-based row parser (when column detection fails)
+function parseTextRows(text) {
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 5);
+  const parsed = [];
+  for (const line of lines) {
+    if (/^poured\s+date|^date\s+changes/i.test(line)) continue;
+    const dateRe = /(\d{1,2}\/\d{1,2}\/\d{2,4})/g;
+    const dates = [];
+    let m;
+    while ((m = dateRe.exec(line)) !== null) dates.push(m[1]);
+    const timeRe = /(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)/;
+    const timeMatch = line.match(timeRe);
+    const time = timeMatch ? timeMatch[1] : '';
+    const mixMatch = line.match(/(\d+MPa\s+\d+mm\s+[A-Za-z][A-Za-z\s\(\)]*?(?=\s{2,}|$))/);
+    const mix = mixMatch ? mixMatch[1].trim() : '';
+    // Detect contact name (Skye/Emma/Marie etc.)
+    const contactMatch = line.match(/\b(Skye|Emma|Marie|Coennie)\b/i);
+    const contact = contactMatch ? contactMatch[1] : '';
+    const site = siteFromContact(contact);
+
+    let remaining = line
+      .replace(/[\u0001\u2022\*]/g, '')
+      .replace(/\d{1,2}\/\d{1,2}\/\d{2,4}/g, '')
+      .replace(timeRe, '')
+      .replace(/\d+MPa\s+\d+mm\s+[A-Za-z][A-Za-z\s\(\)]*/g, '')
+      .replace(/\b(Skye|Emma|Marie|Coennie)\b/gi, '')
+      .replace(/\s{2,}/g, '|')
+      .trim();
+    const parts = remaining.split('|').map(s => s.trim()).filter(s => s.length > 0);
+    let description = '', location = '';
+    if (parts.length >= 2) { description = parts[0]; location = parts[1]; }
+    else if (parts.length === 1) { description = parts[0]; }
+
+    // Quantity: last small decimal/integer
+    const qtyRe = /(\d+\.\d+|\b\d{1,3}\b)(?!\/|\s*:|\s*MPa)/g;
+    const numbers = [];
+    let n;
+    while ((n = qtyRe.exec(line)) !== null) {
+      const val = parseFloat(n[1]);
+      if (val < 200 && val > 0) numbers.push(val);
+    }
+    const quantity = numbers[numbers.length - 1] || 0;
+
+    if (!description && !mix && quantity === 0) continue;
+
+    let pourDate = '';
+    if (dates.length > 0) {
+      const useDate = dates[dates.length - 1];
+      pourDate = isoFromDmy(useDate);
+    }
+
+    parsed.push({
+      pourDate, pourTime: time, description, site, location, contact,
+      mix, quantity, po: '', tests: '', delivered: false
+    });
+  }
+  return parsed;
+}
+
+function parsePaste() {
+  const text = document.getElementById('pasteArea').value;
+  if (!text.trim()) { toast('Paste some text or drop a PDF first', true); return; }
+  const parsed = parseTextRows(text);
+  pendingPaste = parsed;
+  renderPastePreview(parsed);
+}
+
+function renderPastePreview(parsed) {
+  const wrap = document.getElementById('pastePreview');
+  if (parsed.length === 0) {
+    wrap.innerHTML = '<div class="help-box" style="background:rgba(239,68,68,0.12); border-left-color:var(--danger);">No pour rows recognised. Try copying directly from the PDF text.</div>';
+    document.getElementById('confirmPasteBtn').disabled = true;
+    return;
+  }
+
+  const matched = parsed.filter(p => p.site).length;
+  const dated = parsed.filter(p => p.pourDate).length;
+
+  let html = `<div style="margin-top:14px; font-size:12px; color:var(--text-2);">
+    Detected ${parsed.length} pour${parsed.length > 1 ? 's' : ''}
+    ${matched > 0 ? ' · ' + matched + ' auto-matched to a site by contact name' : ''}
+    ${dated < parsed.length ? ' · <span style="color:var(--warning);">' + (parsed.length - dated) + ' missing date (TBC)</span>' : ''}
+  </div>`;
+  html += '<div class="preview-table"><table><thead><tr><th>Date</th><th>Time</th><th>Site</th><th>Description</th><th>Location</th><th>Contact</th><th>Mix</th><th>Qty</th><th>Tests</th><th>Pump</th><th>Placers</th></tr></thead><tbody>';
+  parsed.forEach(p => {
+    const siteShort = p.site ? (SITE_LABELS[p.site] ? SITE_LABELS[p.site].short : p.site) : '';
+    const siteCss = p.site ? siteCssClass(p.site) : '';
+    const dateCell = p.pourDate
+      ? `<span class="mono">${fmtDate(p.pourDate)}</span>`
+      : '<span class="tag amber" style="font-size:9px;">TBC</span>';
+    html += `<tr>
+      <td>${dateCell}</td>
+      <td class="mono">${p.pourTime || '—'}</td>
+      <td>${siteShort ? `<span class="site-pill ${siteCss}">${siteShort}</span>` : '<span style="color:var(--muted);">—</span>'}</td>
+      <td>${p.description || '—'}</td>
+      <td>${p.location || '—'}</td>
+      <td>${p.contact || '—'}</td>
+      <td style="font-size:11px;">${p.mix || '—'}</td>
+      <td class="mono" style="text-align:right;">${p.quantity || 0}</td>
+      <td style="text-align:center;"><span class="yn-pill ${p.tests ? 'y' : 'n'}">${p.tests ? 'Y' : 'N'}</span></td>
+      <td style="text-align:center;"><span class="yn-pill ${p.concPump ? 'y' : 'n'}">${p.concPump ? 'Y' : 'N'}</span></td>
+      <td style="text-align:center;"><span class="yn-pill ${p.placers ? 'y' : 'n'}">${p.placers ? 'Y' : 'N'}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+  wrap.innerHTML = html;
+  document.getElementById('confirmPasteBtn').disabled = false;
+}
+
+function confirmPaste() {
+  // Smart merge: match incoming pours to existing ones by (pourDate + description + site).
+  // - If matched: update fields that have changed (mix, quantity, time, etc.) and log each change
+  // - If unmatched: insert as new pour
+  // - Existing pours not in the incoming PDF are left alone (not deleted)
+  let added = 0, updated = 0, fieldChanges = 0;
+
+  // Build a key for matching
+  const keyOf = (p) => `${p.pourDate || ''}|${(p.description || '').trim().toLowerCase()}|${(p.site || '').trim()}`;
+
+  // Index existing non-archived pours by key (we don't want to overwrite archived ones)
+  const existingByKey = {};
+  pours.forEach(p => {
+    if (p.archivedAt) return;
+    existingByKey[keyOf(p)] = p;
+  });
+
+  // Fields the import is authoritative for. Anything else (po, comments, locked, extraContacts, delivered)
+  // stays untouched on update so user-added data isn't clobbered.
+  const IMPORT_FIELDS = ['pourTime', 'location', 'contact', 'mix', 'quantity', 'tests'];
+
+  pendingPaste.forEach(incoming => {
+    const k = keyOf(incoming);
+    const existing = existingByKey[k];
+    if (existing) {
+      // Update only changed fields, log each one
+      let changedHere = 0;
+      IMPORT_FIELDS.forEach(field => {
+        const oldVal = existing[field];
+        const newVal = incoming[field];
+        // Treat empty string and undefined as equivalent
+        const oldNorm = (oldVal === '' || oldVal == null) ? null : oldVal;
+        const newNorm = (newVal === '' || newVal == null) ? null : newVal;
+        if (oldNorm !== newNorm && newNorm !== null) {
+          existing[field] = newVal;
+          changedHere++;
+          fieldChanges++;
+        }
+      });
+      if (changedHere > 0) {
+        logActivity(`PDF refresh updated ${changedHere} field${changedHere>1?'s':''} on`, existing.description);
+        updated++;
+      }
+    } else {
+      // New pour. The spread from `incoming` carries placers/concPump from the PDF parser;
+      // we only fall back to defaults for the user-side fields that the PDF doesn't supply.
+      const newPour = {
+        id: uid(),
+        ...incoming,
+        // Sensible defaults for fields the parser doesn't always set
+        placers: !!incoming.placers,
+        placersCrew: incoming.placersCrew || '',
+        concPump: !!incoming.concPump,
+        concPumpCrew: incoming.concPumpCrew || '',
+        extraContacts: [],
+        comments: '',
+        delivered: false,
+        addedBy: userName || 'Anonymous',
+        addedAt: Date.now()
+      };
+      if ((!newPour.tests || !newPour.tests.trim()) && SITE_DEFAULT_TESTS[newPour.site]) {
+        newPour.tests = SITE_DEFAULT_TESTS[newPour.site];
+      }
+      pours.push(newPour);
+      added++;
+    }
+  });
+
+  if (added > 0 || updated > 0) {
+    logActivity(`refreshed register from PDF — ${added} new, ${updated} updated`, '');
+    savePours();
+    renderAll();
+  }
+  closeModal('pasteModal');
+
+  let msg;
+  if (added === 0 && updated === 0) {
+    msg = 'No changes — register already in sync with this PDF';
+  } else {
+    const parts = [];
+    if (added > 0) parts.push(`${added} added`);
+    if (updated > 0) parts.push(`${updated} updated (${fieldChanges} field${fieldChanges>1?'s':''})`);
+    msg = 'Refresh complete: ' + parts.join(', ');
+  }
+  toast(msg);
+}
+
+// ───── CONTACTS DIRECTORY ─────
+function onOrgSelectChange() {
+  const sel = document.getElementById('ct-org');
+  const customInput = document.getElementById('ct-org-custom');
+  if (sel.value === '__custom__') {
+    customInput.style.display = 'block';
+    customInput.focus();
+  } else {
+    customInput.style.display = 'none';
+    customInput.value = '';
+  }
+}
+
+// Render the Sites Covered checkbox list dynamically from getAllSites()
+function renderContactSiteCheckboxes(checkedSites) {
+  const wrap = document.getElementById('ct-sites');
+  const all = getAllSites();
+  if (all.length === 0) {
+    wrap.innerHTML = '<div style="color:var(--muted); font-size:12px; font-style:italic;">No sites yet — add one from the site filter bar.</div>';
+    return;
+  }
+  wrap.innerHTML = all.map(s => {
+    const checked = checkedSites.includes(s) ? 'checked' : '';
+    return `<label style="display:flex; align-items:center; gap:5px; font-size:12px; padding:5px 10px; background:var(--bg); border:1px solid var(--border-2); border-radius:3px; cursor:pointer;">
+      <input type="checkbox" value="${s.replace(/"/g, '&quot;')}" ${checked}> ${s}
+    </label>`;
+  }).join('');
+}
+
+function openContactModal(contactId) {
+  const isEdit = !!contactId;
+  const existing = isEdit ? contacts.find(c => c.id === contactId) : null;
+
+  // Title: distinct copy for self-add vs editing existing entry
+  const title = isEdit
+    ? 'Edit Contact'
+    : (window._afterOtherPicker
+        ? 'Add Your Name and Contact Details'
+        : 'Add a Person to the Directory');
+  document.getElementById('contactModalTitle').textContent = title;
+  document.getElementById('ct-id').value = contactId || '';
+
+  // Split existing name into first/last
+  let first = '', last = '';
+  if (existing && existing.name) {
+    const parts = existing.name.trim().split(/\s+/);
+    first = parts[0] || '';
+    last = parts.slice(1).join(' ') || '';
+  }
+  document.getElementById('ct-firstname').value = first;
+  document.getElementById('ct-lastname').value = last;
+  document.getElementById('ct-role').value = existing ? (existing.role || '') : '';
+  document.getElementById('ct-phone').value = existing ? (existing.phone || '') : '';
+  document.getElementById('ct-email').value = existing ? (existing.email || '') : '';
+
+  // Org dropdown — set to existing org. If org is custom (not in built-ins), show custom field.
+  const orgSel = document.getElementById('ct-org');
+  const orgCustom = document.getElementById('ct-org-custom');
+  orgCustom.style.display = 'none';
+  orgCustom.value = '';
+  if (existing) {
+    if (BUILTIN_ORG_LABELS[existing.org]) {
+      orgSel.value = existing.org;
+    } else {
+      orgSel.value = '__custom__';
+      orgCustom.style.display = 'block';
+      orgCustom.value = ORG_LABELS[existing.org].full;
+    }
+  } else {
+    orgSel.value = 'fh';
+  }
+
+  // Site checkboxes
+  const checkedSites = existing && Array.isArray(existing.sites) ? existing.sites : [];
+  renderContactSiteCheckboxes(checkedSites);
+
+  // Delete button only when editing
+  document.getElementById('ct-delete-btn').style.display = isEdit ? '' : 'none';
+
+  openModal('contactModal');
+}
+
+function saveContact() {
+  const id = document.getElementById('ct-id').value;
+  const first = document.getElementById('ct-firstname').value.trim();
+  const last = document.getElementById('ct-lastname').value.trim();
+  if (!first) { toast('First name required', true); return; }
+  if (!last) { toast('Last name required — full name is needed for activity log', true); return; }
+  const fullName = (first + ' ' + last).trim();
+
+  // Resolve org: built-in id from dropdown, or custom typed-in name
+  const orgSelVal = document.getElementById('ct-org').value;
+  let org;
+  if (orgSelVal === '__custom__') {
+    const custom = document.getElementById('ct-org-custom').value.trim();
+    if (!custom) { toast('Type the organisation name or pick from the list', true); return; }
+    // Slugify the custom org into a stable id (lowercase, alphanumeric only)
+    org = custom.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 24) || ('org' + Date.now().toString(36).slice(-4));
+    // Stash the full label so ORG_LABELS proxy can render it nicely.
+    if (!window._customOrgLabels) window._customOrgLabels = {};
+    window._customOrgLabels[org] = custom;
+  } else {
+    org = orgSelVal;
+  }
+
+  const sitesPicked = Array.from(document.querySelectorAll('#ct-sites input[type="checkbox"]:checked')).map(cb => cb.value);
+
+  // Block duplicate name (different IDs but same full name)
+  const dupe = contacts.find(c => c.id !== id && c.name.toLowerCase().trim() === fullName.toLowerCase().trim());
+  if (dupe) {
+    toast(fullName + ' is already in the directory. Pick that entry instead.', true);
+    return;
+  }
+
+  const data = {
+    id: id || ('c_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)),
+    name: fullName,
+    role: document.getElementById('ct-role').value.trim(),
+    org,
+    orgLabel: orgSelVal === '__custom__' ? document.getElementById('ct-org-custom').value.trim() : '',
+    phone: document.getElementById('ct-phone').value.trim(),
+    email: document.getElementById('ct-email').value.trim(),
+    sites: sitesPicked
+  };
+  if (id) {
+    const idx = contacts.findIndex(c => c.id === id);
+    if (idx >= 0) {
+      contacts[idx] = data;
+      logActivity('updated contact', fullName);
+    }
+  } else {
+    contacts.push(data);
+    logActivity('added contact', fullName);
+  }
+  saveContacts();
+  closeModal('contactModal');
+
+  // If the user just added themselves via "Other" picker, sign them in automatically
+  if (window._afterOtherPicker) {
+    setUserName(fullName);
+    window._afterOtherPicker = false;
+    toast('Welcome ' + fullName + ' — you can now make changes.');
+  } else {
+    toast(id ? 'Contact updated' : 'Contact added');
+  }
+  renderAll();
+}
+
+function deleteContact() {
+  const id = document.getElementById('ct-id').value;
+  if (!id) return;
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`Remove ${c.name} from the directory?`)) return;
+  contacts = contacts.filter(x => x.id !== id);
+  logActivity('removed contact', c.name);
+  saveContacts();
+  renderAll();
+  closeModal('contactModal');
+  toast('Contact removed');
+}
+
+document.getElementById('addContactBtn').addEventListener('click', () => openContactModal(null));
+
+function renderContacts() {
+  const wrap = document.getElementById('contactsList');
+  document.getElementById('contactsCount').textContent = contacts.length + ' people';
+  if (contacts.length === 0) {
+    wrap.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--muted); font-style: italic;">Directory is empty — click "+ Add Your Name and Contact Details" to start.</div>';
+    return;
+  }
+  // Group by org for clarity
+  const orgOrder = ['fh', 'firth', 'jx', 'pl'];
+  const grouped = {};
+  contacts.forEach(c => {
+    if (!grouped[c.org]) grouped[c.org] = [];
+    grouped[c.org].push(c);
+  });
+
+  let html = '<div style="padding: 8px 16px;">';
+  orgOrder.forEach(org => {
+    const list = grouped[org];
+    if (!list || list.length === 0) return;
+    const label = ORG_LABELS[org] ? ORG_LABELS[org].full : org;
+    html += `<div style="margin-bottom: 18px;">
+      <div style="font-family:'Share Tech Mono',monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 400; margin-bottom: 8px; padding-top: 4px; display:flex; align-items:center;">
+        <span class="org-tag ${orgCssClass(org)}" style="margin-right: 8px;">${ORG_LABELS[org].short}</span>${label}
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">`;
+    list.forEach(c => {
+      const sitesText = c.sites && c.sites.length > 0
+        ? c.sites.map(s => SITE_LABELS[s] ? SITE_LABELS[s].short : s).join(' · ')
+        : '<span style="color:var(--muted);">no sites</span>';
+      html += `<div class="contact-card" onclick="openContactModal('${c.id}')">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <div style="min-width:0; flex:1;">
+            <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:16px; letter-spacing:0.5px; color:var(--text);">${c.name}</div>
+            <div style="font-size:12px; color:var(--text-2); margin-top:2px;">${c.role || ''}</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:14px; margin-top:8px; font-family:'Share Tech Mono',monospace; font-size:11px; flex-wrap:wrap; letter-spacing:0.5px;">
+          ${c.phone ? `<a href="tel:${c.phone.replace(/\s/g,'')}" onclick="event.stopPropagation()" style="color:var(--text-2); text-decoration:none;">📞 ${c.phone}</a>` : ''}
+          ${c.email ? `<a href="mailto:${c.email}" onclick="event.stopPropagation()" style="color:var(--text-2); text-decoration:none;">✉ ${c.email}</a>` : ''}
+        </div>
+        <div style="font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); margin-top:8px; letter-spacing:1px; text-transform:uppercase;">${sitesText}</div>
+      </div>`;
+    });
+    html += '</div></div>';
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+// ───── CHART ─────
+let chartMode = 'volume'; // 'volume' or 'count'
+
+document.querySelectorAll('.chart-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chart-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    chartMode = btn.dataset.mode;
+    renderChart();
+  });
+});
+
+function siteSegmentClass(siteKey) {
+  if (!siteKey) return 'unset';
+  if (siteKey.startsWith('Baxters')) return 'baxters';
+  if (siteKey.startsWith('Barry')) return 'barry';
+  if (siteKey.startsWith('Willows')) return 'willows';
+  return 'unset';
+}
+
+function renderChart() {
+  const body = document.getElementById('chartBody');
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Build day buckets — next 20 working days (Mon-Fri only)
+  const buckets = [];
+  const WORKING_DAYS = 20;
+  let cursor = new Date(today);
+  while (buckets.length < WORKING_DAYS) {
+    const day = cursor.getDay();
+    if (day !== 0 && day !== 6) {
+      const iso = cursor.getFullYear() + '-' + String(cursor.getMonth()+1).padStart(2,'0') + '-' + String(cursor.getDate()).padStart(2,'0');
+      buckets.push({
+        date: new Date(cursor),
+        iso,
+        isToday: cursor.getTime() === today.getTime(),
+        isWeekend: false,
+        pours: [],
+        segments: {
+          baxters: { volume: 0, count: 0, pouredVol: 0, pouredCount: 0, awaitingVol: 0, awaitingCount: 0 },
+          barry:   { volume: 0, count: 0, pouredVol: 0, pouredCount: 0, awaitingVol: 0, awaitingCount: 0 },
+          willows: { volume: 0, count: 0, pouredVol: 0, pouredCount: 0, awaitingVol: 0, awaitingCount: 0 },
+          unset:   { volume: 0, count: 0, pouredVol: 0, pouredCount: 0, awaitingVol: 0, awaitingCount: 0 }
+        }
+      });
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  // Bucket all pours that fall in window
+  pours.forEach(p => {
+    if (!p.pourDate) return;
+    const idx = buckets.findIndex(b => b.iso === p.pourDate);
+    if (idx < 0) return;
+    const seg = siteSegmentClass(p.site);
+    const vol = parseFloat(p.quantity) || 0;
+    const isAwaiting = !p.delivered && (!p.po || p.po.length < 3);
+    buckets[idx].pours.push(p);
+    buckets[idx].segments[seg].volume += vol;
+    buckets[idx].segments[seg].count += 1;
+    if (p.delivered) {
+      buckets[idx].segments[seg].pouredVol += vol;
+      buckets[idx].segments[seg].pouredCount += 1;
+    }
+    if (isAwaiting) {
+      buckets[idx].segments[seg].awaitingVol += vol;
+      buckets[idx].segments[seg].awaitingCount += 1;
+    }
+  });
+
+  // Find max for y-axis scaling
+  const totals = buckets.map(b => {
+    let t = 0;
+    Object.values(b.segments).forEach(s => {
+      t += chartMode === 'volume' ? s.volume : s.count;
+    });
+    return t;
+  });
+  const max = Math.max(...totals, chartMode === 'volume' ? 10 : 3);
+  // Round max to a clean number
+  const roundedMax = chartMode === 'volume'
+    ? Math.ceil(max / 25) * 25
+    : Math.ceil(max);
+
+  // Empty state if literally nothing
+  const totalAcrossWindow = totals.reduce((s, n) => s + n, 0);
+  if (totalAcrossWindow === 0) {
+    body.innerHTML = '<div class="chart-empty">No pours scheduled in next 4 working weeks. Add pours or import a PDF to see the schedule.</div>';
+    return;
+  }
+
+  // Build the chart HTML
+  let gridHtml = '<div class="chart-grid">';
+  const gridSteps = 4;
+  for (let i = 0; i <= gridSteps; i++) {
+    const val = roundedMax - (roundedMax * i / gridSteps);
+    const top = (i / gridSteps) * 100;
+    gridHtml += `<div class="line" style="top: ${top}%;">${i === 0 ? (chartMode === 'volume' ? Math.round(val) + ' m³' : Math.round(val)) : Math.round(val)}</div>`;
+  }
+  gridHtml += '</div>';
+
+  let html = '<div class="chart-canvas">' + gridHtml;
+
+  buckets.forEach(b => {
+    const dow = b.date.toLocaleDateString('en-NZ', { weekday: 'short' });
+    const dnum = b.date.getDate();
+    const monthShort = b.date.toLocaleDateString('en-NZ', { month: 'short' });
+
+    // Total for this day
+    const totalToday = chartMode === 'volume'
+      ? Object.values(b.segments).reduce((s, x) => s + x.volume, 0)
+      : Object.values(b.segments).reduce((s, x) => s + x.count, 0);
+    const stackHeightPct = roundedMax > 0 ? Math.min(100, (totalToday / roundedMax) * 100) : 0;
+
+    // Build segments — order: baxters, barry, willows, unset (bottom to top in stack)
+    let segHtml = '';
+    const segOrder = ['baxters', 'barry', 'willows', 'unset'];
+    segOrder.forEach(segKey => {
+      const seg = b.segments[segKey];
+      const segVal = chartMode === 'volume' ? seg.volume : seg.count;
+      if (segVal <= 0) return;
+      const segHeightPct = totalToday > 0 ? (segVal / totalToday) * 100 : 0;
+      // If part of segment is awaiting PO, render an awaiting overlay
+      const awaitingVal = chartMode === 'volume' ? seg.awaitingVol : seg.awaitingCount;
+      const awaitingPct = segVal > 0 ? (awaitingVal / segVal) * 100 : 0;
+      // For poured portion, dim with poured class
+      const pouredVal = chartMode === 'volume' ? seg.pouredVol : seg.pouredCount;
+      const pouredPct = segVal > 0 ? (pouredVal / segVal) * 100 : 0;
+      const isPoured = pouredPct >= 99;
+      const segClass = segKey + (awaitingPct > 50 ? ' awaiting' : '') + (isPoured ? ' poured' : '');
+      segHtml += `<div class="chart-bar-seg ${segClass}" style="height: ${segHeightPct}%;" title="${segKey}"></div>`;
+    });
+
+    // Tooltip data
+    const tipParts = [];
+    segOrder.forEach(segKey => {
+      const seg = b.segments[segKey];
+      if (seg.count === 0) return;
+      const labels = { baxters: 'Baxters', barry: 'Barry', willows: 'Willows', unset: '(no site)' };
+      tipParts.push(`<div class="row"><span class="label">${labels[segKey]}</span><span>${seg.count}× / ${seg.volume.toFixed(1)} m³</span></div>`);
+    });
+    const totalAwaiting = Object.values(b.segments).reduce((s, x) => s + x.awaitingCount, 0);
+    const totalCount = b.pours.length;
+    const totalVol = Object.values(b.segments).reduce((s, x) => s + x.volume, 0);
+    let tipHtml = '';
+    if (totalCount > 0) {
+      tipHtml = `<div class="chart-tooltip">
+        <strong>${b.date.toLocaleDateString('en-NZ', { weekday: 'long', day: '2-digit', month: 'short' })}</strong>
+        <div class="row"><span class="label">Total</span><span>${totalCount}× / ${totalVol.toFixed(1)} m³</span></div>
+        ${tipParts.join('')}
+        ${totalAwaiting > 0 ? `<div class="row" style="color: var(--danger); margin-top:3px;"><span class="label">Awaiting PO</span><span>${totalAwaiting}×</span></div>` : ''}
+      </div>`;
+    }
+
+    const labelClasses = ['chart-day-label'];
+    if (b.isToday) labelClasses.push('today');
+    if (b.isWeekend) labelClasses.push('weekend');
+
+    const colClasses = ['chart-day-col'];
+    if (b.isToday) colClasses.push('today-col');
+    if (b.date.getDay() === 1 && !b.isToday) colClasses.push('week-start');
+
+    const showVolBelow = chartMode === 'volume' && totalVol > 0;
+    const volSub = showVolBelow ? `<span class="vol">${totalVol.toFixed(0)}m³</span>` : (totalCount > 0 ? `<span class="vol">${totalCount}×</span>` : '');
+
+    html += `<div class="${colClasses.join(' ')}">
+      ${tipHtml}
+      <div class="chart-bar-stack" style="height: ${stackHeightPct}%;">${segHtml}</div>
+    </div>`;
+  });
+
+  html += '</div>'; // chart-canvas
+
+  // Day labels row beneath
+  let labelsHtml = '<div style="display:flex; gap:2px;">';
+  buckets.forEach(b => {
+    const dow = b.date.toLocaleDateString('en-NZ', { weekday: 'short' });
+    const dnum = b.date.getDate();
+    const totalToday = chartMode === 'volume'
+      ? Object.values(b.segments).reduce((s, x) => s + x.volume, 0)
+      : Object.values(b.segments).reduce((s, x) => s + x.count, 0);
+    const labelClasses = ['chart-day-label'];
+    if (b.isToday) labelClasses.push('today');
+    if (b.isWeekend) labelClasses.push('weekend');
+    if (b.date.getDay() === 1 && !b.isToday) labelClasses.push('week-start-label');
+    const sub = totalToday > 0
+      ? `<span class="vol">${chartMode === 'volume' ? totalToday.toFixed(0) + 'm³' : totalToday + '×'}</span>`
+      : '';
+    labelsHtml += `<div class="${labelClasses.join(' ')}" style="flex:1; min-width:0; ${b.date.getDay() === 1 && !b.isToday ? 'border-left:1px solid var(--border-2);' : ''}">
+      <span class="dow">${dow}</span>
+      <span class="dnum">${dnum}</span>
+      ${sub}
+    </div>`;
+  });
+  labelsHtml += '</div>';
+
+  body.innerHTML = html + labelsHtml;
+}
+
+// ───── SETTINGS ─────
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  // Render the latest data when settings opens
+  renderSettings();
+  openModal('settingsModal');
+});
+
+function renderSettings() {
+  // Archive summary
+  const archived = pours.filter(p => p.archivedAt).length;
+  const eligible = pours.filter(p => {
+    if (p.archivedAt) return false;
+    if (!p.delivered || !p.pourDate) return false;
+    const t = new Date(p.pourDate + 'T00:00:00').getTime();
+    if (isNaN(t)) return false;
+    return Date.now() - t > 30 * 24 * 60 * 60 * 1000;
+  }).length;
+  document.getElementById('archive-summary').innerHTML = `
+    <span class="mono">${archived}</span> pour${archived===1?'':'s'} already archived ·
+    <span class="mono">${eligible}</span> ready to be archived (poured + over 30 days old)
+  `;
+
+  // Sites summary
+  const customSites = sites.length;
+  document.getElementById('settings-sites-summary').innerHTML = `
+    <span class="mono">${DEFAULT_BUILTIN_SITES.length}</span> built-in (Baxters, Barry, Willows) ·
+    <span class="mono">${customSites}</span> added by users
+  `;
+}
+
+function runAutoArchiveNow() {
+  if (!requireRegistered()) return;
+  const before = pours.filter(p => p.archivedAt).length;
+  runAutoArchive();
+  const after = pours.filter(p => p.archivedAt).length;
+  const newly = after - before;
+  toast(newly > 0 ? `Archived ${newly} pour${newly===1?'':'s'}` : 'Nothing to archive yet');
+  renderSettings();
+  renderAll();
+}
+
+// ───── DEMO SEED ─────
+document.getElementById('demoBtn').addEventListener('click', async () => {
+  if (!requireRegistered()) return;
+  if (pours.length > 0) {
+    if (!confirm('This will add demo pours alongside existing ones. Continue?')) return;
+  }
+  const today = new Date();
+  const day = (offset) => {
+    const d = new Date(today); d.setDate(d.getDate() + offset);
+    return d.toISOString().slice(0, 10);
+  };
+  const demo = [
+    // Past pours (already delivered, with POs) — locked
+    { offset: -2, time: '8:00 AM', desc: 'Tank Farm Blinding', site: 'Baxters Rd', loc: 'Zone 1',
+      mix: '25MPa 19mm Pump mix', qty: 46, po: 'FH-OG-2026-0411', tests: '', delivered: true },
+    { offset: -1, time: '11:00 AM', desc: 'Sump Floor Blinding', site: 'Baxters Rd', loc: 'Zone 1',
+      mix: '30MPa 19mm Standard mix', qty: 1, po: 'FH-OG-2026-0411', tests: '', delivered: true },
+
+    // Today and upcoming — mix of awaiting PO and ready
+    { offset: 0, time: '10:30 AM', desc: 'Concrete Surrounds 2nd lift (Manholes)', site: 'Baxters Rd', loc: 'Zone 3',
+      mix: '30MPa 19mm Pump mix (Special)', qty: 20, po: '', tests: '1 x 7 days, 2 x 28 days', delivered: false,
+      comments: '[06/05 14:22 · Fulton Hogan] Mix changed from Standard to Pump (Special) — Coennie confirmed.\n\n[07/05 09:10 · Firth] Need PO before 8am tomorrow please. Held trucks until then.' },
+    { offset: 1, time: '11:00 AM', desc: 'Western Walkway FP07 Plinths', site: 'Baxters Rd', loc: 'Zone 5',
+      mix: '30MPa 19mm Standard mix', qty: 0.2, po: 'FH-OG-2026-0418', tests: '1 x 7 days, 2 x 28 days', delivered: false },
+    { offset: 2, time: '5:00 AM', desc: 'Tank Farm Blinding', site: 'Baxters Rd', loc: 'Zone 1',
+      mix: '25MPa 19mm Pump mix', qty: 46, po: '', tests: '', delivered: false,
+      comments: '[07/05 16:40 · Firth] 5am start — Marlon will need pump on site by 4:30. Confirmed with him.' },
+    { offset: 3, time: '8:00 AM', desc: 'Sump Base Pour', site: 'Baxters Rd', loc: 'Zone 1',
+      mix: '30MPa 19mm Standard mix', qty: 12, po: '', tests: '', delivered: false },
+    { offset: 4, time: '8:00 AM', desc: 'Disc Filter Blinding', site: 'Barry Rd', loc: 'Disc Filters',
+      mix: '20MPa 19mm Standard mix', qty: 6, po: 'FH-OG-2026-0420', tests: '1 x 7 days, 2 x 28 days', delivered: false },
+    { offset: 5, time: '3:00 AM', desc: 'Tank Farm Slab', site: 'Barry Rd', loc: 'Zone 1',
+      mix: '30MPa 19mm Pump mix (Normal)', qty: 126.7, po: '', tests: '1 x 7 days, 2 x 28 days', delivered: false,
+      placers: true, placersCrew: 'Sunnz crew', concPump: true, concPumpCrew: 'Marlon' },
+    { offset: 6, time: '10:30 AM', desc: 'Precast Pipe Supports x6', site: 'Willows Rd', loc: 'Marie\'s yard',
+      mix: '30MPa 19mm Standard mix', qty: 2.88, po: '', tests: '1 x 7 days, 2 x 28 days', delivered: false },
+    { offset: 7, time: '10:30 AM', desc: 'Precast Pipe Supports x6', site: 'Willows Rd', loc: 'Marie\'s yard',
+      mix: '30MPa 19mm Standard mix', qty: 2.88, po: '', tests: '1 x 7 days, 2 x 28 days', delivered: false },
+    { offset: 8, time: '7:00 AM', desc: 'Foundation pad east', site: 'Willows Rd', loc: 'East yard',
+      mix: '30MPa 19mm Pump mix', qty: 18, po: '', tests: '1 x 7 days, 2 x 28 days', delivered: false,
+      placers: true, placersCrew: '', concPump: true, concPumpCrew: '' }
+  ];
+
+  demo.forEach(d => {
+    // Derive primary FH contact from site for demo
+    const siteContact = d.site === 'Baxters Rd' ? 'Skye'
+      : d.site === 'Barry Rd' ? 'Emma'
+      : d.site === 'Willows Rd' ? 'Marie'
+      : '';
+    pours.push({
+      id: uid(),
+      pourDate: day(d.offset),
+      pourTime: d.time,
+      description: d.desc,
+      site: d.site,
+      location: d.loc,
+      contact: siteContact,
+      mix: d.mix,
+      quantity: d.qty,
+      po: d.po,
+      tests: d.tests,
+      delivered: d.delivered,
+      placers: !!d.placers,
+      placersCrew: d.placersCrew || '',
+      concPump: !!d.concPump,
+      concPumpCrew: d.concPumpCrew || '',
+      extraContacts: [],
+      comments: d.comments || '',
+      addedBy: 'Demo',
+      addedAt: Date.now() - (d.offset * 86400000) + Math.random() * 1000
+    });
+  });
+  logActivity(`seeded ${demo.length} demo pours`, '');
+  await savePours();
+  renderAll();
+  toast('Demo data loaded — ' + demo.length + ' pours');
+});
+
+
+// ───── FILTERS ─────
+document.querySelectorAll('.filter-chip:not(.site-filter)').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip:not(.site-filter)').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    activeFilter = c.dataset.filter;
+    renderTable();
+  });
+});
+
+function getFiltered() {
+  return pours.filter(p => {
+    const isArchived = !!p.archivedAt;
+    // Archive view: show ONLY archived; default views: hide archived
+    if (activeFilter === 'archive') {
+      if (!isArchived) return false;
+    } else {
+      if (isArchived) return false;
+    }
+
+    const s = poStatus(p);
+    if (activeFilter === 'awaiting' && s !== 'awaiting') return false;
+    if (activeFilter === 'ready' && s !== 'ready') return false;
+    if (activeFilter === 'poured' && s !== 'poured') return false;
+    if (activeFilter === 'upcoming' && (s === 'poured' || !inDays(p.pourDate, 7))) return false;
+
+    if (activeSite !== 'all') {
+      if ((p.site || '') !== activeSite) return false;
+    }
+    return true;
+  });
+}
+
+// ───── RENDER ─────
+function renderKPIs() {
+  // Top-line KPIs and filter counts ignore archived pours so the dashboard reflects current state
+  const live = pours.filter(p => !p.archivedAt);
+  const upcoming = live.filter(p => !p.delivered);
+  const awaiting = live.filter(p => poStatus(p) === 'awaiting');
+  const ready = live.filter(p => poStatus(p) === 'ready');
+  const poured = live.filter(p => p.delivered);
+  const totalVol = upcoming.reduce((s, p) => s + (parseFloat(p.quantity) || 0), 0);
+
+  document.getElementById('kpiUpcoming').textContent = upcoming.length;
+  document.getElementById('kpiAwait').textContent = awaiting.length;
+  document.getElementById('kpiReady').textContent = ready.length;
+  document.getElementById('kpiVolume').textContent = totalVol.toFixed(1);
+  document.getElementById('kpiPoured').textContent = poured.length;
+
+  document.getElementById('nAll').textContent = live.length;
+  document.getElementById('nAwait').textContent = awaiting.length;
+  document.getElementById('nReady').textContent = ready.length;
+  document.getElementById('nPoured').textContent = poured.length;
+  document.getElementById('nUpcoming').textContent = live.filter(p => !p.delivered && inDays(p.pourDate, 7)).length;
+  document.getElementById('nArchive').textContent = pours.filter(p => p.archivedAt).length;
+
+  // Site counts are rendered by renderSiteFilterBar (dynamic site list)
+
+  document.getElementById('rowCount').textContent = pours.length + (pours.length === 1 ? ' row' : ' rows');
+}
+
+function renderTable() {
+  const wrap = document.getElementById('tableWrap');
+  const filtered = getFiltered().slice().sort((a, b) => {
+    if (!a.pourDate) return 1;
+    if (!b.pourDate) return -1;
+    return a.pourDate.localeCompare(b.pourDate) || (a.pourTime || '').localeCompare(b.pourTime || '');
+  });
+
+  if (filtered.length === 0 && pours.length === 0) {
+    wrap.innerHTML = `<div class="empty-state">
+      <div class="icon">📋</div>
+      <h3>Register is empty</h3>
+      <p>Click <strong>+ Add Pour</strong> or <strong>Paste from PDF</strong> to get started.</p>
+    </div>`;
+    return;
+  }
+  if (filtered.length === 0) {
+    wrap.innerHTML = `<div class="empty-state">
+      <div class="icon">⚪</div>
+      <h3>No pours match this filter</h3>
+    </div>`;
+    return;
+  }
+
+  let html = `<table>
+    <thead><tr>
+      <th class="col-date">Pour Date</th>
+      <th class="col-time">Time</th>
+      <th>Site</th>
+      <th class="col-desc">Description</th>
+      <th class="col-location">Location</th>
+      <th>Contact</th>
+      <th class="col-mix">Mix</th>
+      <th class="col-qty">m³</th>
+      <th class="col-po">PO Number</th>
+      <th class="col-tests" title="Tests required is set by FH (via PDF or manually)">Tests <span style="font-family:'Share Tech Mono',monospace; font-size:8px; color:var(--muted); display:block; letter-spacing:1px; font-weight:400; margin-top:1px;">SET BY FH</span></th>
+      <th class="col-pump" title="Conc Pump is set by FH (via PDF or manually)">Conc Pump <span style="font-family:'Share Tech Mono',monospace; font-size:8px; color:var(--muted); display:block; letter-spacing:1px; font-weight:400; margin-top:1px;">SET BY FH</span></th>
+      <th class="col-placers" title="Placers is set by FH (via PDF or manually)">Placers <span style="font-family:'Share Tech Mono',monospace; font-size:8px; color:var(--muted); display:block; letter-spacing:1px; font-weight:400; margin-top:1px;">SET BY FH</span></th>
+      <th class="col-actions"></th>
+    </tr></thead><tbody>`;
+
+  filtered.forEach(p => {
+    const status = poStatus(p);
+    const rowClass = p.delivered ? 'poured' : '';
+
+    const cell = (field, value, type = 'text') => {
+      if (type === 'date') {
+        return `<input type="date" class="cell-input" value="${value || ''}" onchange="updateField('${p.id}','${field}',this.value)">`;
+      }
+      if (type === 'number') {
+        return `<input type="number" step="0.1" class="cell-input mono" style="text-align:right;" value="${value || 0}" onchange="updateField('${p.id}','${field}',parseFloat(this.value)||0)">`;
+      }
+      return `<input type="text" class="cell-input" value="${(value || '').replace(/"/g,'&quot;')}" onchange="updateField('${p.id}','${field}',this.value)">`;
+    };
+
+    // Site cell: pill (read-only label)
+    const siteInfo = SITE_LABELS[p.site];
+    let siteCell;
+    if (siteInfo) {
+      const cls = siteCssClass(p.site);
+      siteCell = `<span class="site-pill ${cls}">${siteInfo.short}</span>`;
+    } else {
+      siteCell = '<span style="color:var(--muted); font-size:11px;">—</span>';
+    }
+
+    // Contact column — show the pour's primary FH contact + any extras
+    let primaryContact = null;
+    if (p.contact) {
+      const primaryName = p.contact.toLowerCase().trim();
+      primaryContact = contacts.find(c => c.name.toLowerCase().split(' ')[0] === primaryName.split(' ')[0]);
+    }
+    const extraIds = Array.isArray(p.extraContacts) ? p.extraContacts : [];
+    const extraContacts = extraIds.map(id => contacts.find(c => c.id === id)).filter(Boolean);
+
+    const renderContactChip = (c, isExtra) => {
+      const orgLabel = ORG_LABELS[c.org] ? ORG_LABELS[c.org].short : c.org.toUpperCase();
+      const removeBtn = isExtra
+        ? `<a href="#" onclick="event.preventDefault(); removeExtraContact('${p.id}','${c.id}')" title="Remove from this pour" style="color:var(--muted); margin-left:2px;">×</a>`
+        : '';
+      return `<div class="contact-chip">
+        <span class="org-tag ${orgCssClass(c.org)}">${orgLabel}</span>
+        <span class="name">${c.name}</span>
+        ${c.phone ? `<a href="tel:${c.phone.replace(/\s/g,'')}" title="Call ${c.name}">📞</a>` : ''}
+        ${c.email ? `<a href="mailto:${c.email}" title="Email ${c.name}">✉</a>` : ''}
+        ${removeBtn}
+      </div>`;
+    };
+
+    let contactHtml = '';
+    if (primaryContact) {
+      contactHtml += renderContactChip(primaryContact, false);
+    } else if (p.contact) {
+      contactHtml += `<div class="contact-chip">
+        <span class="org-tag fh">FH</span>
+        <span class="name">${p.contact}</span>
+        <span style="color:var(--muted); font-size:10px;">(not in directory)</span>
+      </div>`;
+    }
+    extraContacts.forEach(c => contactHtml += renderContactChip(c, true));
+    if (!contactHtml) {
+      contactHtml = '<span style="color:var(--muted); font-size:11px;">—</span>';
+    }
+    contactHtml += `<a href="#" onclick="event.preventDefault(); openAddContactToPour('${p.id}')"
+                      style="display:inline-block; margin-top:4px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); text-decoration:none; letter-spacing:0.8px;"
+                      title="Attach another person to this pour">+ add person</a>`;
+
+    // PO cell — inline input, always editable
+    const poCell = `<input type="text" class="po-input mono ${p.po ? 'filled' : 'empty'}" value="${(p.po || '').replace(/"/g,'&quot;')}" placeholder="enter PO" onchange="updateField('${p.id}','po',this.value)">`;
+
+    // Tests Y/N — derived from whether p.tests has content. Click to view/edit.
+    const hasTests = !!(p.tests && p.tests.trim());
+    const testsTooltip = hasTests ? p.tests.replace(/"/g, '&quot;') : 'No tests required';
+    const testsCell = `<span class="yn-pill ${hasTests ? 'y' : 'n'}"
+        onclick="openTestsEditor('${p.id}')"
+        title="${testsTooltip}">${hasTests ? 'Y' : 'N'}</span>`;
+
+    // Placers Y/N + crew name (optional). p.placers boolean, p.placersCrew string
+    const placersOn = !!p.placers;
+    let placersCell = `<span class="yn-pill ${placersOn ? 'y' : 'n'}"
+        onclick="togglePlacers('${p.id}')"
+        title="Click to toggle">${placersOn ? 'Y' : 'N'}</span>`;
+    if (placersOn) {
+      placersCell += `<input type="text" class="placer-crew-input"
+          placeholder="crew (optional)"
+          value="${(p.placersCrew || '').replace(/"/g,'&quot;')}"
+          onchange="updateField('${p.id}','placersCrew',this.value)">`;
+    }
+
+    // Conc Pump Y/N + crew name (optional). p.concPump boolean, p.concPumpCrew string
+    const pumpOn = !!p.concPump;
+    let pumpCell = `<span class="yn-pill ${pumpOn ? 'y' : 'n'}"
+        onclick="togglePump('${p.id}')"
+        title="Click to toggle">${pumpOn ? 'Y' : 'N'}</span>`;
+    if (pumpOn) {
+      pumpCell += `<input type="text" class="placer-crew-input"
+          placeholder="crew (optional)"
+          value="${(p.concPumpCrew || '').replace(/"/g,'&quot;')}"
+          onchange="updateField('${p.id}','concPumpCrew',this.value)">`;
+    }
+
+    // Action column: Mark poured + Delete + Comments
+    const pourBtn = p.delivered
+      ? `<button class="icon-btn" title="Unmark poured" onclick="togglePoured('${p.id}')">↺</button>`
+      : `<button class="icon-btn" title="Mark as poured" onclick="togglePoured('${p.id}')">✓</button>`;
+    const deleteBtn = `<button class="icon-btn danger" title="Remove" onclick="deletePour('${p.id}')">×</button>`;
+
+    // Comment toggle
+    const cCount = commentCount(p);
+    const isExpanded = expandedComments.has(p.id);
+    const commentBtnClass = 'comment-toggle' + (cCount > 0 ? ' has-comments' : '') + (isExpanded ? ' expanded' : '');
+    const commentBtn = `<button class="${commentBtnClass}" title="Show comments" onclick="toggleComments('${p.id}')">💬 ${cCount} ${isExpanded ? '▾' : '▸'}</button>`;
+
+    const actionCell = `<div style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;">${pourBtn}${deleteBtn}${commentBtn}</div>`;
+
+    html += `<tr class="${rowClass}">
+      <td data-label="Date">${cell('pourDate', p.pourDate, 'date')}</td>
+      <td data-label="Time">${cell('pourTime', p.pourTime)}</td>
+      <td data-label="Site">${siteCell}</td>
+      <td data-label="Description">${cell('description', p.description)}</td>
+      <td data-label="Location">${cell('location', p.location)}</td>
+      <td data-label="Contact"><div class="contact-list">${contactHtml}</div></td>
+      <td data-label="Mix" style="font-size:12px;">${cell('mix', p.mix)}</td>
+      <td data-label="m³" class="qty">${cell('quantity', p.quantity, 'number')}</td>
+      <td data-label="PO" class="po-cell">${poCell}</td>
+      <td data-label="Tests" class="col-tests">${testsCell}</td>
+      <td data-label="Conc Pump" class="col-pump">${pumpCell}</td>
+      <td data-label="Placers" class="col-placers">${placersCell}</td>
+      <td data-label="">${actionCell}</td>
+    </tr>`;
+
+    // Expanded comment row
+    if (isExpanded) {
+      html += `<tr class="comment-row">
+        <td colspan="13">
+          <div class="comment-wrap">
+            ${renderCommentHistory(p.comments)}
+            <div class="comment-input-wrap">
+              <textarea class="comment-input" data-comment-pour="${p.id}"
+                placeholder="Add a comment for this pour... (e.g. 'Marlon arriving 30 min early', 'Hold truck till OG confirms')"
+                onkeydown="if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); addComment('${p.id}'); }"></textarea>
+              <button class="btn fh small" onclick="addComment('${p.id}')" style="white-space:nowrap;">Post</button>
+            </div>
+            <div style="font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:0.6px; color:var(--muted); margin-top:5px;">⌘/Ctrl + Enter to post · stamped with your name and time</div>
+          </div>
+        </td>
+      </tr>`;
+    }
+  });
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function renderActivity() {
+  const wrap = document.getElementById('activityList');
+  if (activity.length === 0) {
+    wrap.innerHTML = '<div class="activity-item" style="color:var(--muted); font-style:italic; justify-content:center;">No activity yet</div>';
+    return;
+  }
+  const recent = activity.slice().reverse().slice(0, 30);
+  wrap.innerHTML = recent.map(a => {
+    const ago = relTime(a.when);
+    return `<div class="activity-item">
+      <div><span class="who">${a.user || a.roleName || 'Anonymous'}</span> ${a.action} ${a.pourDesc ? '<em style="color:var(--text-2);">' + a.pourDesc + '</em>' : ''}</div>
+      <div class="when">${ago}</div>
+    </div>`;
+  }).join('');
+}
+
+function relTime(ts) {
+  const diff = (Date.now() - ts) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+function renderSiteFilterBar() {
+  const bar = document.getElementById('siteFilterBar');
+  if (!bar) return;
+  const allSites = getAllSites();
+  // Count active (non-archived) live pours per site
+  const live = pours.filter(p => !p.archivedAt);
+  const countFor = (siteKey) => live.filter(p => (p.site || '') === siteKey).length;
+
+  let html = `<span style="font-family:'Share Tech Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); font-weight:400; align-self:center; margin-right:4px;">Site:</span>`;
+  html += `<button class="filter-chip site-filter ${activeSite === 'all' ? 'active' : ''}" data-site="all">All Sites</button>`;
+  allSites.forEach(s => {
+    const isActive = activeSite === s;
+    const n = countFor(s);
+    html += `<button class="filter-chip site-filter ${isActive ? 'active' : ''}" data-site="${s.replace(/"/g, '&quot;')}">${s} <span class="n">${n}</span></button>`;
+  });
+  // Manage sites inline link
+  html += `<a href="#" onclick="event.preventDefault(); openManageSites()" style="margin-left:8px; align-self:center; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); text-decoration:none; letter-spacing:1px; text-transform:uppercase; padding:4px 8px; border:1px dashed var(--border-2);"
+        onmouseover="this.style.color='var(--accent)'; this.style.borderColor='var(--accent)';"
+        onmouseout="this.style.color='var(--muted)'; this.style.borderColor='var(--border-2)';"
+        title="Add or remove sites">+ Manage Sites</a>`;
+  bar.innerHTML = html;
+
+  // Re-bind click handlers since we replaced the DOM
+  bar.querySelectorAll('.filter-chip.site-filter').forEach(c => {
+    c.addEventListener('click', () => {
+      activeSite = c.dataset.site;
+      renderTable();
+      renderSiteFilterBar(); // re-render to update active state
+    });
+  });
+}
+
+// Inline "Manage sites" prompt — anyone registered can add/remove user-added sites
+function openManageSites() {
+  if (!requireRegistered()) return;
+  const customSites = sites.slice(); // user-added only (built-ins are protected)
+  const lines = [
+    'CURRENT SITES:',
+    '  Built-in (cannot remove): ' + DEFAULT_BUILTIN_SITES.join(', '),
+    customSites.length ? '  Added by users: ' + customSites.join(', ') : '  Added by users: (none yet)',
+    '',
+    'Type a site name to ADD it.',
+    'Type "remove: <name>" to remove a user-added site.',
+    'Cancel to close.'
+  ];
+  const input = prompt(lines.join('\n'), '');
+  if (input === null) return;
+  const trimmed = input.trim();
+  if (!trimmed) return;
+
+  const removeMatch = trimmed.match(/^remove:\s*(.+)$/i);
+  if (removeMatch) {
+    const target = removeMatch[1].trim();
+    if (DEFAULT_BUILTIN_SITES.some(s => s.toLowerCase() === target.toLowerCase())) {
+      toast('Cannot remove a built-in site', true);
+      return;
+    }
+    const before = sites.length;
+    sites = sites.filter(s => s.toLowerCase() !== target.toLowerCase());
+    if (sites.length === before) {
+      toast('Site "' + target + '" not found', true);
+      return;
+    }
+    saveSites();
+    logActivity('removed site', target);
+    renderAll();
+    toast('Site "' + target + '" removed');
+    return;
+  }
+
+  // Otherwise — ADD
+  const all = getAllSites();
+  if (all.some(s => s.toLowerCase() === trimmed.toLowerCase())) {
+    toast('"' + trimmed + '" is already in the list', true);
+    return;
+  }
+  sites.push(trimmed);
+  saveSites();
+  logActivity('added site', trimmed);
+  renderAll();
+  toast('Site "' + trimmed + '" added — it now appears everywhere sites are listed');
+}
+
+function renderAll() {
+  renderKPIs();
+  renderSiteFilterBar();
+  renderTable();
+  renderActivity();
+  renderContacts();
+}
+
+// ───── INIT ─────
+document.getElementById('resetAllBtn').addEventListener('click', async (e) => {
+  e.preventDefault();
+  if (!requireRegistered()) return;
+  if (!confirm('Clear ALL pours, contacts and activity log? This affects every viewer. Contacts will be re-seeded with the defaults.')) return;
+  pours = [];
+  activity = [];
+  contacts = JSON.parse(JSON.stringify(SEED_CONTACTS));
+  await savePours();
+  await saveContacts();
+  await saveActivity();
+  renderAll();
+  toast('Register cleared');
+});
+
+renderUserName();
+loadAll();
+</script>
+</body>
+</html>
